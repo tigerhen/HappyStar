@@ -1,0 +1,14 @@
+{
+  "name": "happy-star-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "fastify": "^4.28.0",
+    "@fastify/static": "^7.0.4",
+    "@fastify/cookie": "^9.3.1"
+  }
+}
