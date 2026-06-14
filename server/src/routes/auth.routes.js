@@ -43,4 +43,9 @@ export async function authRoutes(app) {
     }
     return { role: "parent" };
   });
+
+  app.get("/api/children", async () => {
+    const children = await readCollection("children", []);
+    return children.map((c) => ({ id: c.id, name: c.name, emoji: c.emoji, color: c.color }));
+  });
 }
