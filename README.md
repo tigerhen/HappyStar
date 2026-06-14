@@ -25,16 +25,25 @@
 - 存储：JSON 文件（无数据库），数据在 `data/`，原子写
 - 部署：Node 单进程 + systemd 自启，仅家庭内网
 
-## 运行（实现后补全）
+## 运行
 
 ```bash
-npm install
-npm run build      # 构建前端
-npm start          # 启动服务
-# 浏览器访问 http://<内网IP>:<端口>
+npm run install:all   # 安装 server 与 web 依赖
+npm run build         # 构建前端到 web/dist
+npm start             # 启动（默认 0.0.0.0:8080）
+# 浏览器访问 http://<内网IP>:8080
 ```
 
 首次启动引导：设置家长 PIN、确认两个孩子、给孩子设 PIN。
+
+### 开机自启（systemd）
+
+1. 把项目放到 `/opt/happy-star`，`npm run install:all && npm run build`。
+2. 建用户：`sudo useradd -r -s /bin/false happystar && sudo chown -R happystar /opt/happy-star`。
+3. `sudo cp deploy/happy-star.service /etc/systemd/system/`。
+4. `sudo systemctl enable --now happy-star`。
+
+默认 PIN 全为 `0000`，首次登录后请在家长「PIN」页修改全部 PIN。
 
 ## 备份
 
