@@ -1,0 +1,21 @@
+# 依赖
+node_modules/
+
+# 前端构建产物
+web/dist/
+dist/
+
+# 运行时数据（含 PIN 哈希，不入库；定期单独备份）
+data/
+
+# 日志与环境
+*.log
+.env
+.env.local
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# Claude Code 本地配置
+.claude/settings.local.json
