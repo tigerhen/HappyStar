@@ -6,7 +6,7 @@ const EMPTY = { name: "", emoji: "⭐", points: 5, dailyLimit: 1, enabled: true 
 export default function ParentTasksAdmin() {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(EMPTY);
-  const reload = async () => setItems(await (await fetch("/api/tasks")).json());
+  const reload = async () => setItems(await (await fetch("/api/admin/tasks")).json());
   useEffect(() => { reload(); }, []);
 
   const add = async () => {

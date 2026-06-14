@@ -6,7 +6,7 @@ const EMPTY = { name: "", emoji: "🎁", category: "material", cost: 50, stock: 
 export default function ParentRewardsAdmin() {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(EMPTY);
-  const reload = async () => setItems(await (await fetch("/api/rewards")).json());
+  const reload = async () => setItems(await (await fetch("/api/admin/rewards")).json());
   useEffect(() => { reload(); }, []);
 
   const add = async () => {

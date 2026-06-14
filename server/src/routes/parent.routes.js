@@ -66,6 +66,10 @@ export async function parentRoutes(app) {
   });
 
   for (const kind of ["tasks", "rewards"]) {
+    app.get(`/api/admin/${kind}`, async (req, reply) => {
+      if (!requireParent(req, reply)) return;
+      return readCollection(kind, []);
+    });
     app.post(`/api/admin/${kind}`, async (req, reply) => {
       if (!requireParent(req, reply)) return;
       const items = await readCollection(kind, []);
