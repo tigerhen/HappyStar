@@ -9,7 +9,7 @@
   existing data directory (HAPPY_STAR_DATA is external to the code path).
 
   Usage from repo root:
-    .\deploy\deploy.ps1 -Host 192.168.31.222 -User wh -RemoteDir /home/wh/apps/happy-star -DataDir /home/wh/apps/happy-star/data
+    .\deploy\deploy.ps1 -SshHost 192.168.31.222 -User wh -RemoteDir /home/wh/apps/happy-star -DataDir /home/wh/apps/happy-star/data
 
   Or with defaults (host/user from common values; remote dir + data dir must be set):
     .\deploy\deploy.ps1 -RemoteDir /home/wh/apps/happy-star -DataDir /home/wh/apps/happy-star/data
