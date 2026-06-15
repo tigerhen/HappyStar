@@ -1,11 +1,11 @@
 :root {
-  --bg: #fff8ee;            /* warm cream page background */
+  --bg: #f3f3f0;            /* neutral light page background */
   --surface: #ffffff;
-  --panel: #fffdf8;
-  --ink: #4a3f2e;
-  --ink-soft: #b3a892;
-  --line: #f0e7d6;
-  --accent: #ffcc33;        /* yellow: Done button + completed row */
+  --panel: #ffffff;
+  --ink: #3f3d39;
+  --ink-soft: #9b9893;
+  --line: #e7e7e2;
+  --accent: #ffcc33;        /* yellow: accent only — Done button + completed row */
   --accent-strong: #ffb300;
   --accent-ink: #6b5200;
   --star: #ffb300;
@@ -20,8 +20,8 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 button { font: inherit; cursor: pointer; }
-.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 16px; box-shadow: 0 2px 10px rgba(180,150,80,.06); }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 2px 10px rgba(180,150,80,.06); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 16px; box-shadow: 0 1px 6px rgba(0,0,0,.05); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 1px 6px rgba(0,0,0,.05); }
 .done-btn { background: var(--accent); color: var(--accent-ink); border: none; border-radius: 22px; padding: 8px 20px; font-weight: 500; box-shadow: 0 2px 6px rgba(255,179,0,.35); transition: transform .12s; }
 .done-btn:active { transform: scale(.95); }
 
