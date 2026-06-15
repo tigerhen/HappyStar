@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../api.js";
+import Avatar from "../components/Avatar.jsx";
 
 export default function ParentApprovals() {
   const [list, setList] = useState([]);
@@ -19,7 +20,10 @@ export default function ParentApprovals() {
         const enough = r.currentBalance >= r.cost;
         return (
           <div key={r.id} className="panel" style={{ marginBottom: 10 }}>
-            <div>{r.childEmoji} <strong>{r.childName || r.childId}</strong> 想兑换 {r.rewardEmoji} {r.rewardName}（★{r.cost}）</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Avatar avatar={r.childAvatar} emoji={r.childEmoji} size={32} />
+              <span><strong>{r.childName || r.childId}</strong> 想兑换 {r.rewardEmoji} {r.rewardName}（★{r.cost}）</span>
+            </div>
             <div style={{ fontSize: 12, color: enough ? "#3b6d11" : "#cc3333" }}>
               当前余额 {r.currentBalance} {enough ? "✓" : "✗ 不足"}
             </div>

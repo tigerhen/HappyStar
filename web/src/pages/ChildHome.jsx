@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { api } from "../api.js";
 import { childTheme } from "../theme.js";
 import StarCount from "../components/StarCount.jsx";
+import Avatar from "../components/Avatar.jsx";
 import TasksTab from "./TasksTab.jsx";
 import RewardsTab from "./RewardsTab.jsx";
 import CalendarTab from "./CalendarTab.jsx";
@@ -20,7 +21,7 @@ export default function ChildHome({ me, onLogout }) {
       <div style={{ background: t.header, padding: "14px 16px 12px", borderRadius: "0 0 22px 22px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>{me.emoji}</div>
+            <div style={{ width: 40, height: 40 }}><Avatar avatar={me.avatar} emoji={me.emoji} size={40} /></div>
             <div>
               <div style={{ fontWeight: 500, color: t.ink }}>{me.name}</div>
               <div style={{ fontSize: 11, color: t.ink, opacity: .7 }}>越努力，越幸运 ⭐</div>

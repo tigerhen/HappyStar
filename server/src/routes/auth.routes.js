@@ -48,6 +48,7 @@ export async function authRoutes(app) {
         childId: session.childId,
         balance: balance(events, session.childId),
         name: child.name,
+        avatar: child.avatar,
         emoji: child.emoji,
         color: child.color,
       };
@@ -57,6 +58,6 @@ export async function authRoutes(app) {
 
   app.get("/api/children", async () => {
     const children = await readCollection("children", []);
-    return children.map((c) => ({ id: c.id, name: c.name, emoji: c.emoji, color: c.color }));
+    return children.map((c) => ({ id: c.id, name: c.name, avatar: c.avatar, emoji: c.emoji, color: c.color }));
   });
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../api.js";
+import Avatar from "../components/Avatar.jsx";
 
 export default function Login({ onLogin }) {
   const [children, setChildren] = useState([]);
@@ -26,7 +27,7 @@ export default function Login({ onLogin }) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
         <div className="card" style={{ width: 320, padding: 24, textAlign: "center" }}>
-          <div style={{ fontSize: 56 }}>{picked.emoji}</div>
+          <div style={{ display: "flex", justifyContent: "center" }}><Avatar avatar={picked.avatar} emoji={picked.emoji} size={72} /></div>
           <h2 style={{ fontWeight: 500, margin: "6px 0 16px" }}>{picked.name}</h2>
           <input
             type="password" inputMode="numeric" autoFocus value={pin}
@@ -53,9 +54,9 @@ export default function Login({ onLogin }) {
       <p style={{ color: "var(--ink-soft)", fontSize: 13, marginTop: 4 }}>小星星在等你哦 ⭐</p>
       <div style={{ display: "flex", gap: 18, justifyContent: "center", flexWrap: "wrap", marginTop: 28 }}>
         {children.map((c) => (
-          <button key={c.id} className="card" onClick={() => setPicked({ role: "child", childId: c.id, name: c.name, emoji: c.emoji })}
+          <button key={c.id} className="card" onClick={() => setPicked({ role: "child", childId: c.id, name: c.name, avatar: c.avatar, emoji: c.emoji })}
             style={{ border: "1px solid var(--line)", padding: "18px 12px", width: 120 }}>
-            <div style={{ fontSize: 48 }}>{c.emoji}</div>
+            <div style={{ display: "flex", justifyContent: "center" }}><Avatar avatar={c.avatar} emoji={c.emoji} size={56} /></div>
             <div style={{ marginTop: 6, fontWeight: 500 }}>{c.name}</div>
           </button>
         ))}

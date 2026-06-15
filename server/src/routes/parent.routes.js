@@ -27,6 +27,7 @@ export async function parentRoutes(app) {
         ...r,
         currentBalance: balance(events, r.childId),
         childName: child.name,
+        childAvatar: child.avatar,
         childEmoji: child.emoji,
         rewardName: reward.name,
         rewardEmoji: reward.emoji,

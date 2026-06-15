@@ -15,8 +15,8 @@ export async function seedIfEmpty() {
   const children = await readCollection("children", null);
   if (!children) {
     await writeCollection("children", [
-      { id: "haolin", name: "王颢霖", emoji: "👧", color: "pink", pinHash: hashPin(DEFAULT_CHILD_PIN) },
-      { id: "zhongxian", name: "王仲贤", emoji: "👦", color: "blue", pinHash: hashPin(DEFAULT_CHILD_PIN) },
+      { id: "haolin", name: "王颢霖", avatar: "/avatars/haolin.png", emoji: "👧", color: "pink", pinHash: hashPin(DEFAULT_CHILD_PIN) },
+      { id: "zhongxian", name: "王仲贤", avatar: "/avatars/zhongxian.png", emoji: "👦", color: "blue", pinHash: hashPin(DEFAULT_CHILD_PIN) },
     ]);
   }
   if ((await readCollection("tasks", null)) === null) {
