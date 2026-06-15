@@ -8,15 +8,18 @@
 
 ## 当前状态
 
-✅ **已实现** —— 后端 + 前端 + 部署文件完成，35 后端 + 2 前端单测全过，端到端 17 项验收全过。详见 `docs/superpowers/plans/2026-06-14-happy-star.md`。
+✅ **已实现并完成 UI 精修** —— 后端 + 前端 + 部署文件完成，35 后端 + 2 前端单测全过，端到端 17 项验收全过；UI 精修 10 任务全部落地。详见 `docs/superpowers/plans/2026-06-14-happy-star.md` 与 `2026-06-15-happy-star-ui-polish.md`。
 
 ## 文档导航
 
 | 文档 | 作用 |
 |---|---|
 | [设计文档](docs/superpowers/specs/2026-06-14-happy-star-design.md) | 所有决策的唯一事实源（架构、数据模型、规则、UI 规范） |
+| [实现计划 v1](docs/superpowers/plans/2026-06-14-happy-star.md) | 24 任务的后端 + 前端 + 部署实施步骤（已完成） |
+| [UI 精修计划 v2](docs/superpowers/plans/2026-06-15-happy-star-ui-polish.md) | 10 任务的视觉精修（暖色、动效、confetti、per-child 主题）已完成 |
 | [界面原型](docs/prototypes/) | 已确认的界面状态，作为"视觉契约" |
-| 本 README | 项目说明与运行/部署方式（随实现完善） |
+| 本 README | 项目说明与运行/部署方式 |
+| [AGENTS.md](AGENTS.md) | 给 AI 协作者的工程规则（红线、命令、视觉契约） |
 
 ## 技术方案
 
