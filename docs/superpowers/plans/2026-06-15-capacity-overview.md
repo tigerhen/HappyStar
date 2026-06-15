@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Let the parent see, in one place, how every reward's estimated time-to-reach changes under three effort scenarios (基础 / 现实80% / 满分100%) — and have that overview recompute automatically when tasks are added, edited, or removed.
+**Goal:** Let the parent see, **on the same screen where they create/edit tasks**, how every reward's estimated time-to-reach changes under three effort scenarios (基础 / 现实80% / 满分100%) — recomputed automatically whenever a task is added, edited, or removed. No tab switching.
 
-**Architecture:** Add two fields to the task model (`weeklyDays`, `core`) that the existing admin create/update routes already pass through (they spread `req.body`). Add a pure domain module that computes weekly earning capacity from the task set and an ETA helper. Expose one new parent endpoint `GET /api/admin/capacity` that joins capacity with rewards. Add a parent "产能总览" section and the two task-form fields.
+**Architecture:** Add two fields to the task model (`weeklyDays`, `core`) that the existing admin routes already pass through (they spread `req.body`). Add a pure domain module that computes weekly earning capacity and an ETA helper. Expose one new parent endpoint `GET /api/admin/capacity` that joins capacity with rewards. The capacity overview is a **reusable panel** placed beside the task admin in a responsive split: stacked vertically in portrait, two columns in landscape.
 
 **Tech Stack:** Node.js + Fastify, `node:test`; React + Vite, Vitest. No new dependencies. Verified with the Claude Preview MCP (`launch.json` config `happy-star`, port 8080).
 
@@ -21,16 +21,20 @@
 ## File Structure
 
 ```
-server/src/domain/capacity.js     CREATE  taskWeekly(), capacity(tasks), etaWeeks()
-server/test/capacity.test.js      CREATE  domain unit tests
-server/src/seed.js                MODIFY  seed tasks gain weeklyDays + core defaults
+server/src/domain/capacity.js      CREATE  taskWeekly(), capacity(tasks), etaWeeks()
+server/test/capacity.test.js       CREATE  domain unit tests
+server/src/seed.js                 MODIFY  seed tasks gain weeklyDays + core defaults
 server/src/routes/parent.routes.js MODIFY  add GET /api/admin/capacity
-server/test/routes.test.js        MODIFY  assert capacity endpoint shape
-web/src/api.js                    MODIFY  add api.capacity()
-web/src/pages/ParentCapacity.jsx  CREATE  overview page (3 numbers + reward table)
-web/src/pages/ParentHome.jsx      MODIFY  add 产能 section
-web/src/pages/ParentTasksAdmin.jsx MODIFY  add weeklyDays + core inputs; show on rows
+server/test/routes.test.js         MODIFY  assert capacity endpoint shape
+web/src/api.js                     MODIFY  add api.capacity()
+web/src/components/CapacityPanel.jsx CREATE  reusable overview (3 numbers + reward table), refetches on reloadKey
+web/src/pages/ParentTasksAdmin.jsx MODIFY  add weeklyDays + core inputs; show on rows; onChanged callback
+web/src/pages/ParentTasks.jsx      CREATE  responsive split: task admin + live capacity panel
+web/src/pages/ParentHome.jsx       MODIFY  任务 section renders ParentTasks; remove standalone 产能; widen container
+web/src/theme.css                  MODIFY  .hs-split responsive (portrait stacked / landscape side-by-side)
 ```
+
+**Layout requirement:** capacity is shown next to task create/edit so ETA changes are visible without switching tabs. `.hs-split` stacks vertically in portrait (scroll up/down) and becomes two columns in landscape (task admin left, capacity right).
 
 **Conventions**
 - Backend tests: `npm --prefix server test`. Frontend: `npm --prefix web test`. Build: `npm run build`.
@@ -250,12 +254,11 @@ git commit -m "feat(server): GET /api/admin/capacity (scenarios + reward ETAs)"
 
 ---
 
-## Task 4: API client + 产能总览 page + ParentHome wiring
+## Task 4: API client + reusable CapacityPanel
 
 **Files:**
 - Modify: `web/src/api.js`
-- Create: `web/src/pages/ParentCapacity.jsx`
-- Modify: `web/src/pages/ParentHome.jsx`
+- Create: `web/src/components/CapacityPanel.jsx`
 
 - [ ] **Step 1: Add to `web/src/api.js`** the capacity call (inside the `api` object, e.g. after `logs`):
 
@@ -263,7 +266,9 @@ git commit -m "feat(server): GET /api/admin/capacity (scenarios + reward ETAs)"
   capacity: () => req("GET", "/api/admin/capacity"),
 ```
 
-- [ ] **Step 2: Create `web/src/pages/ParentCapacity.jsx`**
+- [ ] **Step 2: Create `web/src/components/CapacityPanel.jsx`**
+
+The panel refetches whenever its `reloadKey` prop changes, so the parent screen can bump the key after each task add/delete.
 
 ```jsx
 import React, { useEffect, useState } from "react";
@@ -275,32 +280,32 @@ function Eta({ weeks }) {
   return <span>{weeks} 周<span style={{ color: "var(--ink-soft)", fontSize: 11 }}>（约{days}天）</span></span>;
 }
 
-export default function ParentCapacity() {
+export default function CapacityPanel({ reloadKey }) {
   const [data, setData] = useState(null);
-  useEffect(() => { api.capacity().then(setData); }, []);
+  useEffect(() => { api.capacity().then(setData); }, [reloadKey]);
 
   if (!data) return <p style={{ color: "var(--ink-soft)" }}>加载中…</p>;
   const { capacity: cap, rewards } = data;
 
-  const Metric = ({ label, value, hint }) => (
+  const Metric = ({ label, value }) => (
     <div style={{ flex: 1, background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 12, padding: "10px 12px", textAlign: "center" }}>
       <div style={{ fontSize: 12, color: "var(--ink-soft)" }}>{label}</div>
       <div style={{ fontSize: 22, fontWeight: 500 }}>{value}</div>
-      <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>{hint}</div>
+      <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>分/周</div>
     </div>
   );
 
   return (
     <div>
       <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-        <Metric label="基础（核心任务）" value={cap.base} hint="分/周" />
-        <Metric label="现实 80%" value={cap.realistic} hint="分/周" />
-        <Metric label="满分 100%" value={cap.max} hint="分/周" />
+        <Metric label="基础（核心）" value={cap.base} />
+        <Metric label="现实 80%" value={cap.realistic} />
+        <Metric label="满分 100%" value={cap.max} />
       </div>
 
       {cap.base === 0 && (
         <div style={{ background: "#fff4d6", color: "#8a6a10", padding: 8, borderRadius: 10, marginBottom: 10, fontSize: 13 }}>
-          还没有标记“核心”的任务，基础场景无法估算（显示 —）。在「任务」页勾选核心任务即可。
+          还没有标记“核心”的任务，基础场景显示 —。勾选任务的“核心”即可。
         </div>
       )}
 
@@ -326,72 +331,43 @@ export default function ParentCapacity() {
           ))}
         </tbody>
       </table>
-      <p style={{ fontSize: 11, color: "var(--ink-soft)", marginTop: 10 }}>增删或修改任务后，回到本页即自动刷新。</p>
     </div>
   );
 }
 ```
 
-- [ ] **Step 3: Wire it into `web/src/pages/ParentHome.jsx`**
-
-Add the import:
-
-```jsx
-import ParentCapacity from "./ParentCapacity.jsx";
-```
-
-Add `["capacity", "产能"]` to the `SECTIONS` array (e.g. right after `["approvals", "待审批"]`):
-
-```jsx
-const SECTIONS = [
-  ["approvals", "待审批"], ["capacity", "产能"], ["tasks", "任务"], ["rewards", "奖励"],
-  ["adjust", "加分"], ["pins", "PIN"], ["logs", "日志"],
-];
-```
-
-Add the render line alongside the other `{sec === ... && <... />}` lines:
-
-```jsx
-      {sec === "capacity" && <ParentCapacity />}
-```
-
-- [ ] **Step 4: Verify build compiles**
+- [ ] **Step 3: Verify build compiles**
 
 Run: `npm --prefix web run build`
 Expected: build succeeds.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-git add web/src/api.js web/src/pages/ParentCapacity.jsx web/src/pages/ParentHome.jsx
-git commit -m "feat(web): 产能总览 page with three-scenario reward ETAs"
+git add web/src/api.js web/src/components/CapacityPanel.jsx
+git commit -m "feat(web): reusable CapacityPanel with three-scenario reward ETAs"
 ```
 
 ---
 
-## Task 5: Task admin — `每周可做天数` + `核心` inputs
+## Task 5: Task admin — fields + onChanged callback
 
 **Files:**
 - Modify: `web/src/pages/ParentTasksAdmin.jsx`
 
-- [ ] **Step 1: Update the `EMPTY` form default** in `web/src/pages/ParentTasksAdmin.jsx`:
+- [ ] **Step 1: Update the component signature** to accept `onChanged` (default no-op):
+
+```jsx
+export default function ParentTasksAdmin({ onChanged = () => {} }) {
+```
+
+- [ ] **Step 2: Update the `EMPTY` form default**:
 
 ```js
 const EMPTY = { name: "", emoji: "⭐", points: 5, dailyLimit: 1, weeklyDays: 7, core: false, enabled: true };
 ```
 
-- [ ] **Step 2: Add the two inputs to the create form** (inside the `<div className="panel" ...>`, after the 每日上限 input and before the 添加 button):
-
-```jsx
-        <label style={{ fontSize: 13, color: "var(--ink-soft)" }}>每周可做天数（作业类填 5）</label>
-        <input type="number" min="1" max="7" placeholder="每周可做天数" value={form.weeklyDays} onChange={(e) => setForm({ ...form, weeklyDays: e.target.value })} />
-        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
-          <input type="checkbox" checked={form.core} onChange={(e) => setForm({ ...form, core: e.target.checked })} />
-          核心任务（计入“基础”产能）
-        </label>
-```
-
-- [ ] **Step 3: Include the new fields when creating** — update the `add` function's `adminCreate` call:
+- [ ] **Step 3: Update `add` and `remove` to send new fields and notify the parent**:
 
 ```js
   const add = async () => {
@@ -402,59 +378,158 @@ const EMPTY = { name: "", emoji: "⭐", points: 5, dailyLimit: 1, weeklyDays: 7,
       dailyLimit: Number(form.dailyLimit),
       weeklyDays: Number(form.weeklyDays),
     });
-    setForm(EMPTY); reload();
+    setForm(EMPTY); reload(); onChanged();
   };
+  const remove = async (id) => { await api.adminDelete("tasks", id); reload(); onChanged(); };
 ```
 
-- [ ] **Step 4: Show the flags on each task row** — update the per-task row's detail span:
+- [ ] **Step 4: Add the two inputs to the create form** (inside the `<div className="panel" ...>`, after the 每日上限 input and before the 添加 button):
+
+```jsx
+        <label style={{ fontSize: 13, color: "var(--ink-soft)" }}>每周可做天数（作业类填 5）</label>
+        <input type="number" min="1" max="7" placeholder="每周可做天数" value={form.weeklyDays} onChange={(e) => setForm({ ...form, weeklyDays: e.target.value })} />
+        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+          <input type="checkbox" checked={form.core} onChange={(e) => setForm({ ...form, core: e.target.checked })} />
+          核心任务（计入“基础”产能）
+        </label>
+```
+
+- [ ] **Step 5: Show the flags on each task row** — update the per-task row's detail span:
 
 ```jsx
           <span style={{ color: "var(--ink-soft)" }}>★{t.points} · {t.dailyLimit}/天 · {t.weeklyDays ?? 7}天/周{t.core ? " · 核心" : ""}</span>
 ```
 
-- [ ] **Step 5: Verify build compiles**
+- [ ] **Step 6: Verify build compiles**
 
 Run: `npm --prefix web run build`
 Expected: build succeeds.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add web/src/pages/ParentTasksAdmin.jsx
-git commit -m "feat(web): task admin sets weeklyDays and core flag"
+git commit -m "feat(web): task admin sets weeklyDays/core and notifies on change"
 ```
 
 ---
 
-## Task 6: Visual verification (executor self-check)
+## Task 6: Responsive split layout (task admin + live capacity)
+
+**Files:**
+- Modify: `web/src/theme.css`
+- Create: `web/src/pages/ParentTasks.jsx`
+- Modify: `web/src/pages/ParentHome.jsx`
+
+- [ ] **Step 1: Add the responsive split rule to `web/src/theme.css`** (append at end)
+
+```css
+.hs-split { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
+.hs-split > div { min-width: 0; }
+@media (orientation: landscape) and (min-width: 760px) {
+  .hs-split { grid-template-columns: 1fr 1fr; }
+}
+.hs-col-title { font-size: 16px; font-weight: 500; margin: 0 0 10px; }
+```
+
+- [ ] **Step 2: Create `web/src/pages/ParentTasks.jsx`** (the combined screen; bumps `reloadKey` when tasks change so the panel refetches)
+
+```jsx
+import React, { useState } from "react";
+import ParentTasksAdmin from "./ParentTasksAdmin.jsx";
+import CapacityPanel from "../components/CapacityPanel.jsx";
+
+export default function ParentTasks() {
+  const [reloadKey, setReloadKey] = useState(0);
+  return (
+    <div className="hs-split">
+      <div>
+        <h3 className="hs-col-title">任务管理</h3>
+        <ParentTasksAdmin onChanged={() => setReloadKey((k) => k + 1)} />
+      </div>
+      <div>
+        <h3 className="hs-col-title">产能总览</h3>
+        <CapacityPanel reloadKey={reloadKey} />
+      </div>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 3: Wire into `web/src/pages/ParentHome.jsx`**
+
+Replace the `ParentTasksAdmin` import with `ParentTasks`:
+
+```jsx
+import ParentTasks from "./ParentTasks.jsx";
+```
+
+Remove the now-unused `ParentCapacity` import if a previous draft added one (there should be none — `CapacityPanel` is only used inside `ParentTasks`).
+
+In `SECTIONS`, keep the existing entries (no separate 产能 entry — capacity now lives inside 任务). The array stays:
+
+```jsx
+const SECTIONS = [
+  ["approvals", "待审批"], ["tasks", "任务"], ["rewards", "奖励"],
+  ["adjust", "加分"], ["pins", "PIN"], ["logs", "日志"],
+];
+```
+
+Change the tasks render line from `<ParentTasksAdmin />` to:
+
+```jsx
+      {sec === "tasks" && <ParentTasks />}
+```
+
+Widen the page container so two columns have room — change the outer wrapper's `maxWidth` from `520` to `880`:
+
+```jsx
+    <div style={{ maxWidth: 880, margin: "0 auto", padding: 12 }}>
+```
+
+- [ ] **Step 4: Verify build compiles**
+
+Run: `npm --prefix web run build`
+Expected: build succeeds with no unresolved imports.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add web/src/theme.css web/src/pages/ParentTasks.jsx web/src/pages/ParentHome.jsx
+git commit -m "feat(web): task admin and capacity side-by-side (responsive split)"
+```
+
+---
+
+## Task 7: Visual verification (executor self-check)
 
 **Files:** none.
 
 - [ ] **Step 1: Full build** — Run: `npm run build` (expect `web/dist`).
 - [ ] **Step 2: Start preview** — `preview_start` name `happy-star`.
-- [ ] **Step 3: Log in as 家长 (`0000`), open 产能**. Confirm:
-  - Three metrics show 基础 / 现实80% / 满分100% as 分/周. With seed tasks (作业 10×1×5=50 core, 阅读 2×2×7=28 core, 打扫 6×1×7=42, 帮助 3×2×7=42): base = 50 + 28 = **78**, max = 50 + 28 + 42 + 42 = **162**, realistic = round(162×0.8) = **130**.
-  - Reward table lists each reward with three ETA columns; a reward priced 480 shows ≈6.2周(基础) / ≈3.7周(80%) / ≈3.0周(满分).
-- [ ] **Step 4: Open 任务, add a task** (e.g. 跳绳, 5分, 上限1, 7天, 非核心 → 35分/周), then return to 产能 — confirm 满分 rose from 162 to 197 and ETAs shortened. Delete it and confirm it reverts.
-- [ ] **Step 5: Toggle a core task off** (create one without 核心 vs with) and confirm 基础 changes while 满分 stays.
-- [ ] **Step 6: Run full suite** — `npm test` (backend all PASS incl. capacity; frontend 2 PASS).
-- [ ] **Step 7: Stop preview** (`preview_stop`). Commit any fixes.
+- [ ] **Step 3: Log in as 家长 (`0000`), open 任务**. Confirm task admin and 产能总览 appear together (one screen). With seed tasks (作业 10×1×5=50 core, 阅读 2×2×7=28 core, 打扫 6×1×7=42, 帮助 3×2×7=42): 基础 = **78**, 满分 = **162**, 现实 = round(162×0.8) = **130**. A reward priced 480 shows ≈6.2周(基础) / ≈3.7周(80%) / ≈3.0周(满分).
+- [ ] **Step 4: Add a task** (跳绳, 5分, 上限1, 7天 → 35分/周, 非核心) and confirm the right-hand 满分 jumps from 162 to 197 and ETAs shorten **without leaving the page**. Delete it and confirm it reverts.
+- [ ] **Step 5: Add a core task vs a non-core task** and confirm 基础 changes only when 核心 is checked, while 满分 changes either way.
+- [ ] **Step 6: Check responsive layout** — use `preview_resize` (or the MCP's viewport control) to a landscape width (e.g. 1024×720): the two panels sit side-by-side. At a portrait width (e.g. 420×860): they stack, task admin on top, capacity below (scroll to see).
+- [ ] **Step 7: Run full suite** — `npm test` (backend all PASS incl. capacity; frontend 2 PASS).
+- [ ] **Step 8: Stop preview** (`preview_stop`). Commit any fixes.
 
 ```bash
 git add -A
-git commit -m "test: capacity overview visual verification"
+git commit -m "test: capacity overview + responsive split verification"
 ```
 
 ---
 
 ## Self-Review notes
 
-- Requirement "增删任务能总览奖励预计到手变化" → Task 3 endpoint recomputes from live `tasks.json`; Task 4 page re-fetches on mount; Task 6 step 4 verifies add/delete shifts it.
-- Requirement "基础 / 80% / 100% 三档" → `capacity()` returns `{ base, realistic, max }` (Task 1); page shows all three (Task 4).
+- "任务创建时直接看到产能总览、不来回切换" → Task 6 puts `ParentTasksAdmin` and `CapacityPanel` in one `.hs-split` screen; Task 5's `onChanged` bumps `reloadKey` so the panel refetches on every add/delete (Task 7 step 4 verifies live update).
+- "竖屏上下、横屏左右" → Task 6 `.hs-split` CSS: 1 column by default (portrait), 2 columns under `(orientation: landscape) and (min-width: 760px)`; Task 7 step 6 verifies both.
+- "基础 / 80% / 100% 三档" → `capacity()` returns `{ base, realistic, max }` (Task 1); panel shows all three (Task 4).
 - "基础 = 只算核心任务" → `core` flag (Task 2 seed, Task 5 admin input, Task 1 `base` filter).
 - "每周可做天数" → `weeklyDays` field (Task 2 seed, Task 5 admin input, Task 1 `taskWeekly`).
-- Backward-compat: domain defaults `weeklyDays ?? 7`, `core ?? false`, so pre-existing data files without these fields still compute (older tasks contribute 0 to 基础 until re-marked) — verified by Task 1's "defaults weeklyDays" test.
+- Backward-compat: domain defaults `weeklyDays ?? 7`, `core ?? false`; pre-existing data computes (older tasks count 0 toward 基础 until re-marked) — covered by Task 1's defaults test.
 - Admin create/update need no route change: existing handlers spread `req.body`, so `weeklyDays`/`core` persist automatically (Task 5 relies on this).
-- Type consistency: endpoint returns `{ capacity: { base, realistic, max }, rewards: [{ id, name, emoji, category, cost, etaBase, etaRealistic, etaMax }] }`; `ParentCapacity` consumes exactly these names; `etaWeeks` returns a number or `null`, and `<Eta>` renders `null` as "—".
+- Type consistency: endpoint returns `{ capacity: { base, realistic, max }, rewards: [{ id, name, emoji, category, cost, etaBase, etaRealistic, etaMax }] }`; `CapacityPanel` consumes exactly these names; `etaWeeks` returns a number or `null`, rendered as "—" by `<Eta>`. `ParentTasksAdmin` gains prop `onChanged`; `ParentTasks` supplies it and owns `reloadKey`; `CapacityPanel` consumes `reloadKey`.
 
-Reviewer focus: confirm 基础 excludes non-core and disabled tasks; confirm ETA columns update after task add/delete without a manual refresh beyond re-entering the 产能 tab; confirm a reward unreachable under 基础 (base=0) shows "—" rather than Infinity/NaN.
+Reviewer focus: confirm the capacity panel updates immediately after add/delete (no manual refresh); confirm portrait stacks / landscape splits; confirm 基础 excludes non-core and disabled tasks; confirm an unreachable-under-基础 reward (base=0) shows "—" not Infinity/NaN; confirm the wider 880 container didn't visually break the other parent sections (approvals/logs/etc.).
