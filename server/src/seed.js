@@ -21,10 +21,10 @@ export async function seedIfEmpty() {
   }
   if ((await readCollection("tasks", null)) === null) {
     await writeCollection("tasks", [
-      { id: "t_homework", name: "完成作业", emoji: "📚", points: 10, dailyLimit: 1, enabled: true },
-      { id: "t_read", name: "主动阅读", emoji: "📖", points: 2, dailyLimit: 2, enabled: true },
-      { id: "t_clean", name: "打扫卫生", emoji: "🧹", points: 6, dailyLimit: 1, enabled: true },
-      { id: "t_help", name: "主动帮助他人", emoji: "💗", points: 3, dailyLimit: 2, enabled: true },
+      { id: "t_homework", name: "完成作业", emoji: "📚", points: 10, dailyLimit: 1, weeklyDays: 5, core: true, enabled: true },
+      { id: "t_read", name: "主动阅读", emoji: "📖", points: 2, dailyLimit: 2, weeklyDays: 7, core: true, enabled: true },
+      { id: "t_clean", name: "打扫卫生", emoji: "🧹", points: 6, dailyLimit: 1, weeklyDays: 7, core: false, enabled: true },
+      { id: "t_help", name: "主动帮助他人", emoji: "💗", points: 3, dailyLimit: 2, weeklyDays: 7, core: false, enabled: true },
     ]);
   }
   if ((await readCollection("rewards", null)) === null) {
