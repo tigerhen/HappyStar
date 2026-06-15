@@ -26,6 +26,7 @@ export const api = {
   reject: (id, note) => req("POST", `/api/redemptions/${id}/reject`, { note }),
   adjust: (payload) => req("POST", "/api/adjust", payload),
   logs: (childId) => req("GET", "/api/logs" + (childId ? `?childId=${childId}` : "")),
+  capacity: () => req("GET", "/api/admin/capacity"),
   setPin: (payload) => req("POST", "/api/admin/pin", payload),
   adminCreate: (kind, item) => req("POST", `/api/admin/${kind}`, item),
   adminUpdate: (kind, id, item) => req("PUT", `/api/admin/${kind}/${id}`, item),
