@@ -19,6 +19,7 @@ export default function CalendarTab() {
   const [data, setData] = useState({});
   useEffect(() => { api.calendar(month).then(setData); }, [month]);
   const cells = useMemo(() => monthMatrix(month), [month]);
+  const today = new Date().toISOString().slice(0, 10);
 
   const shift = (delta) => {
     const [y, m] = month.split("-").map(Number);
@@ -40,11 +41,16 @@ export default function CalendarTab() {
         {cells.map((key, i) => {
           if (!key) return <div key={i} />;
           const day = data[key];
+          const isToday = key === today;
           return (
-            <div key={key} style={{ aspectRatio: "1", borderRadius: 6, background: "var(--surface)", border: "1px solid var(--line)", padding: 3, fontSize: 9 }}>
+            <div key={key} style={{
+              aspectRatio: "1", borderRadius: 8, padding: 3, fontSize: 9,
+              background: isToday ? "#fff3c4" : "var(--surface)",
+              border: isToday ? "2px solid var(--accent-strong)" : "1px solid var(--line)",
+            }}>
               <div style={{ color: "var(--ink-soft)" }}>{Number(key.slice(-2))} {day?.hasRedemption ? "🎁" : ""}</div>
               {day && Object.entries(day.earned).map(([cid, pts]) => (
-                <div key={cid} style={{ color: COLORS[cid] || "var(--ink)" }}>+{pts}</div>
+                <div key={cid} style={{ display: "inline-block", marginTop: 2, marginRight: 2, padding: "0 4px", borderRadius: 8, fontWeight: 500, color: "#fff", background: COLORS[cid] || "#888" }}>+{pts}</div>
               ))}
             </div>
           );
