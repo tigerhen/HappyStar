@@ -38,6 +38,9 @@ test("/api/me reflects logged-in child", async () => {
   assert.equal(body.role, "child");
   assert.equal(body.childId, "haolin");
   assert.equal(typeof body.balance, "number");
+  assert.equal(body.name, "王颢霖");
+  assert.equal(body.emoji, "👧");
+  assert.equal(body.color, "pink");
 });
 
 test("child sees task view and can complete within daily limit", async () => {

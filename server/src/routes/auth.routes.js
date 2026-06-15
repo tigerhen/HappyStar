@@ -38,8 +38,19 @@ export async function authRoutes(app) {
     const session = getSession(req.cookies[COOKIE]);
     if (!session) return reply.code(401).send({ error: "no_session" });
     if (session.role === "child") {
-      const events = await readCollection("events", []);
-      return { role: "child", childId: session.childId, balance: balance(events, session.childId) };
+      const [events, children] = await Promise.all([
+        readCollection("events", []),
+        readCollection("children", []),
+      ]);
+      const child = children.find((c) => c.id === session.childId) || {};
+      return {
+        role: "child",
+        childId: session.childId,
+        balance: balance(events, session.childId),
+        name: child.name,
+        emoji: child.emoji,
+        color: child.color,
+      };
     }
     return { role: "parent" };
   });
