@@ -140,6 +140,29 @@ test("child cannot reach parent routes", async () => {
   assert.equal(res.statusCode, 403);
 });
 
+test("parent capacity endpoint returns three scenarios and reward ETAs", async () => {
+  const cookie = await parentCookie();
+  const res = await app.inject({ method: "GET", url: "/api/admin/capacity", headers: { cookie } });
+  assert.equal(res.statusCode, 200);
+  const body = res.json();
+  assert.equal(typeof body.capacity.max, "number");
+  assert.equal(typeof body.capacity.base, "number");
+  assert.equal(typeof body.capacity.realistic, "number");
+  assert.ok(Array.isArray(body.rewards));
+  if (body.rewards.length > 0) {
+    const r = body.rewards[0];
+    assert.ok("etaBase" in r && "etaRealistic" in r && "etaMax" in r);
+    assert.equal(typeof r.cost, "number");
+  }
+});
+
+test("child cannot reach capacity endpoint", async () => {
+  const login = await app.inject({ method: "POST", url: "/api/login", payload: { role: "child", childId: "zhongxian", pin: "0000" } });
+  const cookie = login.headers["set-cookie"];
+  const res = await app.inject({ method: "GET", url: "/api/admin/capacity", headers: { cookie } });
+  assert.equal(res.statusCode, 403);
+});
+
 test("after teardown", () => {
   rmSync(process.env.HAPPY_STAR_DATA, { recursive: true, force: true });
 });

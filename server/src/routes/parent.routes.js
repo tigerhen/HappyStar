@@ -3,6 +3,7 @@ import { readCollection, writeCollection } from "../store.js";
 import { requireParent } from "./guard.js";
 import { balance } from "../domain/points.js";
 import { approveRedemption } from "../domain/redeem.js";
+import { capacity, etaWeeks } from "../domain/capacity.js";
 import { hashPin } from "../auth.js";
 
 function newId(prefix) {
@@ -117,6 +118,28 @@ export async function parentRoutes(app) {
     let events = await readCollection("events", []);
     if (req.query.childId) events = events.filter((e) => e.childId === req.query.childId);
     return events.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  });
+
+  app.get("/api/admin/capacity", async (req, reply) => {
+    if (!requireParent(req, reply)) return;
+    const [tasks, rewards] = await Promise.all([
+      readCollection("tasks", []),
+      readCollection("rewards", []),
+    ]);
+    const cap = capacity(tasks);
+    const rows = rewards
+      .filter((r) => r.enabled)
+      .map((r) => ({
+        id: r.id,
+        name: r.name,
+        emoji: r.emoji,
+        category: r.category,
+        cost: r.cost,
+        etaBase: etaWeeks(r.cost, cap.base),
+        etaRealistic: etaWeeks(r.cost, cap.realistic),
+        etaMax: etaWeeks(r.cost, cap.max),
+      }));
+    return { capacity: cap, rewards: rows };
   });
 
   app.post("/api/admin/pin", async (req, reply) => {
