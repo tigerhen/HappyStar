@@ -1,5 +1,7 @@
 # Happy Star Implementation Plan
 
+> ✅ **已全部完成**（24 任务，commit `803b4e7`..`f40f8bb`，端到端 17 项冒烟全过；commit `d4195af` 标"已实现"）。本文件保留作为回溯参考；不要按字面重跑。代码与决策以 git history 与 `docs/superpowers/specs/2026-06-14-happy-star-design.md` 为准。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a lightweight family points system where two kids self-complete daily tasks to earn star points and request reward redemptions that a parent approves — all over the home LAN.

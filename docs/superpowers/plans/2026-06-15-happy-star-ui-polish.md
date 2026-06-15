@@ -1,5 +1,7 @@
 # Happy Star UI Polish Implementation Plan
 
+> ✅ **已全部完成**（10 任务，commit `baaf8c1`..`d86707e`；外加 3 个用户视觉验收 polish：commit `a112482` 中性底色、`f2ba0fd` 待审批孩子真名、`bd0442c` 日志页孩子真名）。本文件保留作为回溯参考；不要按字面重跑。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Bring the child-facing screens (login + tasks/rewards/calendar) up to the approved prototype's "sunny" quality — per-child themed header, a real task-completion animation (check pop + floating `+N`), readable reward progress bars, and confetti on a successful redemption — without touching backend business rules or the parent admin screens' current clean look.
