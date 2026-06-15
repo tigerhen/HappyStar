@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { api } from "../api.js";
 import ParentApprovals from "./ParentApprovals.jsx";
-import ParentTasksAdmin from "./ParentTasksAdmin.jsx";
+import ParentTasks from "./ParentTasks.jsx";
 import ParentRewardsAdmin from "./ParentRewardsAdmin.jsx";
 import ParentAdjust from "./ParentAdjust.jsx";
 import ParentPins from "./ParentPins.jsx";
@@ -16,7 +16,7 @@ export default function ParentHome({ onLogout }) {
   const [sec, setSec] = useState("approvals");
   const logout = async () => { await api.logout(); onLogout(); };
   return (
-    <div style={{ maxWidth: 520, margin: "0 auto", padding: 12 }}>
+    <div style={{ maxWidth: 880, margin: "0 auto", padding: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <strong style={{ fontWeight: 500 }}>👪 家长</strong>
         <button onClick={logout} style={{ border: "none", background: "none", color: "var(--ink-soft)" }}>退出 ⤴</button>
@@ -30,7 +30,7 @@ export default function ParentHome({ onLogout }) {
         ))}
       </div>
       {sec === "approvals" && <ParentApprovals />}
-      {sec === "tasks" && <ParentTasksAdmin />}
+      {sec === "tasks" && <ParentTasks />}
       {sec === "rewards" && <ParentRewardsAdmin />}
       {sec === "adjust" && <ParentAdjust />}
       {sec === "pins" && <ParentPins />}

@@ -30,3 +30,9 @@ button { font: inherit; cursor: pointer; }
 @keyframes hs-fall { 0% { transform: translateY(-10vh) rotate(0); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 1; } }
 .hs-check-pop { animation: hs-pop .4s cubic-bezier(.34,1.7,.64,1); }
 .hs-floatup { animation: hs-float 1s ease-out forwards; }
+.hs-split { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
+.hs-split > div { min-width: 0; }
+@media (orientation: landscape) and (min-width: 760px) {
+  .hs-split { grid-template-columns: 1fr 1fr; }
+}
+.hs-col-title { font-size: 16px; font-weight: 500; margin: 0 0 10px; }
