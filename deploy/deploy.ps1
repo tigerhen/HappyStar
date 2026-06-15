@@ -14,7 +14,7 @@
   Or with defaults (host/user from common values; remote dir + data dir must be set):
     .\deploy\deploy.ps1 -RemoteDir /home/wh/apps/happy-star -DataDir /home/wh/apps/happy-star/data
 
-.PARAMETER Host
+.PARAMETER SshHost
   SSH host (default: 192.168.31.222)
 
 .PARAMETER User
@@ -36,7 +36,7 @@
 
 [CmdletBinding()]
 param(
-  [string]$Host = "192.168.31.222",
+  [string]$SshHost = "192.168.31.222",
   [string]$User = "wh",
   [string]$RemoteDir = "/home/wh/apps/happy-star",
   [Parameter(Mandatory = $true)]
@@ -57,35 +57,35 @@ try {
   Step "1. Tar local source (exclude node_modules, data, dist, .git, logs)"
   tar -czf $tmpTar --exclude='.git' --exclude='node_modules' --exclude='data' --exclude='web/dist' --exclude='*.log' --exclude='deploy/*.bak' .
   $size = (Get-Item $tmpTar).Length
-  Ok "Tar: $tmpTar ($size bytes)"
+  Ok ("Tar: " + $tmpTar + " (" + $size + " bytes)")
 
-  Step "2. SCP tar to $User@$Host"
-  scp -o StrictHostKeyChecking=no -o ConnectTimeout=10 $tmpTar "${User}@${Host}:${remoteTar}" | Out-Null
-  Ok "Uploaded to $User@$Host:$remoteTar"
+  Step ("2. SCP tar to " + $User + "@" + $SshHost)
+  scp -o StrictHostKeyChecking=no -o ConnectTimeout=10 $tmpTar ("${User}@${SshHost}:${remoteTar}") | Out-Null
+  Ok ("Uploaded to " + $User + "@" + $SshHost + ":" + $remoteTar)
 
-  Step "3. Run remote-install.sh on $Host (install + build + restart)"
-  # Pass port + data dir as env to the remote script.
-  $remoteCmd = "bash deploy/remote-install.sh '$RemoteDir' '$DataDir' '$Port'"
-  ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 "${User}@${Host}" $remoteCmd
+  Step ("3. Run remote-install.sh on " + $SshHost + " (install + build + restart)")
+  # Pass port + data dir as args to the remote script.
+  $remoteCmd = "bash deploy/remote-install.sh '" + $RemoteDir + "' '" + $DataDir + "' '" + $Port + "'"
+  ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 ("${User}@${SshHost}") $remoteCmd
   if ($LASTEXITCODE -ne 0) { Fail "Remote install exited $LASTEXITCODE" }
 
   Step "4. Cleanup local tar"
   Remove-Item $tmpTar -ErrorAction SilentlyContinue
   Ok "Local tar removed"
 
-  Step "5. Verify remote server"
-  ssh -o StrictHostKeyChecking=no "${User}@${Host}" "curl -sS -o /dev/null -w 'HTTP %{http_code} /api/me\n' http://127.0.0.1:${Port}/api/me"
+  Step ("5. Verify remote server")
+  ssh -o StrictHostKeyChecking=no ("${User}@${SshHost}") ("curl -sS -o /dev/null -w 'HTTP %{http_code} /api/me' http://127.0.0.1:" + $Port + "/api/me")
   Ok "Health check done"
 
   Write-Host "`n=== DEPLOY COMPLETE ===" -ForegroundColor Green
-  Write-Host "Remote: http://${Host}:${Port}"
-  Write-Host "Data:   $DataDir (left untouched; contains PIN hashes + events)"
+  Write-Host ("Remote: http://" + $SshHost + ":" + $Port)
+  Write-Host ("Data:   " + $DataDir + " (left untouched; contains PIN hashes + events)")
 }
-catch {
+  catch {
   Write-Host "`nDEPLOY FAILED: $_" -ForegroundColor Red
   # Best-effort cleanup
   Remove-Item $tmpTar -ErrorAction SilentlyContinue
   if (Test-Path $tmpTar) { Remove-Item $tmpTar -Force }
-  ssh -o StrictHostKeyChecking=no "${User}@${Host}" "rm -f $remoteTar" -ErrorAction SilentlyContinue
+  ssh -o StrictHostKeyChecking=no ("${User}@${SshHost}") ("rm -f " + $remoteTar) -ErrorAction SilentlyContinue
   exit 1
 }
