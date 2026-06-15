@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../api.js";
 import RewardRow from "../components/RewardRow.jsx";
+import Confetti from "../components/Confetti.jsx";
 
 export default function RewardsTab({ balance }) {
   const [rewards, setRewards] = useState([]);
   const [msg, setMsg] = useState("");
+  const [fire, setFire] = useState(0);
 
   useEffect(() => { api.rewards().then(setRewards); }, []);
 
@@ -12,6 +14,7 @@ export default function RewardsTab({ balance }) {
     try {
       await api.redeem(id);
       setMsg("已提交申请，等家长同意 🎁");
+      setFire(Date.now());
     } catch (e) {
       setMsg(e.code === "out_of_stock" ? "这个奖励没货啦" : "出错了，再试试");
     }
@@ -20,6 +23,7 @@ export default function RewardsTab({ balance }) {
 
   return (
     <div>
+      <Confetti fire={fire} />
       {msg && <div style={{ background: "#fff4d6", color: "#8a6a10", padding: 8, borderRadius: 10, marginBottom: 8 }}>{msg}</div>}
       {rewards.map((r) => <RewardRow key={r.id} reward={r} balance={balance} onRedeem={redeem} />)}
     </div>
