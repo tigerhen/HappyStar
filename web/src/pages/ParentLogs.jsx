@@ -10,6 +10,11 @@ export default function ParentLogs() {
   useEffect(() => { api.children().then(setChildren); }, []);
   useEffect(() => { api.logs(childId).then(setLogs); }, [childId]);
 
+  const nameOf = (id) => {
+    const c = children.find((x) => x.id === id);
+    return c ? `${c.emoji} ${c.name}` : id;
+  };
+
   return (
     <div>
       <select value={childId} onChange={(e) => setChildId(e.target.value)} style={{ marginBottom: 8 }}>
@@ -18,7 +23,7 @@ export default function ParentLogs() {
       </select>
       {logs.map((e) => (
         <div key={e.id} style={{ display: "flex", justifyContent: "space-between", padding: 8, borderBottom: "1px solid var(--line)", fontSize: 13 }}>
-          <span>{TYPE_LABEL[e.type]} · {e.childId} {e.note ? `（${e.note}）` : ""}</span>
+          <span>{TYPE_LABEL[e.type]} · {nameOf(e.childId)} {e.note ? `（${e.note}）` : ""}</span>
           <span style={{ color: e.delta >= 0 ? "#3b6d11" : "#cc3333" }}>{e.delta >= 0 ? "+" : ""}{e.delta}</span>
         </div>
       ))}
