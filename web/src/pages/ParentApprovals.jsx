@@ -19,7 +19,7 @@ export default function ParentApprovals() {
         const enough = r.currentBalance >= r.cost;
         return (
           <div key={r.id} className="panel" style={{ marginBottom: 10 }}>
-            <div>孩子 <strong>{r.childId}</strong> 想兑换（★{r.cost}）</div>
+            <div>{r.childEmoji} <strong>{r.childName || r.childId}</strong> 想兑换 {r.rewardEmoji} {r.rewardName}（★{r.cost}）</div>
             <div style={{ fontSize: 12, color: enough ? "#3b6d11" : "#cc3333" }}>
               当前余额 {r.currentBalance} {enough ? "✓" : "✗ 不足"}
             </div>

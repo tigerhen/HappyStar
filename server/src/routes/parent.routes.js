@@ -12,11 +12,26 @@ function newId(prefix) {
 export async function parentRoutes(app) {
   app.get("/api/redemptions", async (req, reply) => {
     if (!requireParent(req, reply)) return;
-    const redemptions = await readCollection("redemptions", []);
+    const [redemptions, events, children, rewards] = await Promise.all([
+      readCollection("redemptions", []),
+      readCollection("events", []),
+      readCollection("children", []),
+      readCollection("rewards", []),
+    ]);
     const status = req.query.status;
     const list = status ? redemptions.filter((r) => r.status === status) : redemptions;
-    const events = await readCollection("events", []);
-    return list.map((r) => ({ ...r, currentBalance: balance(events, r.childId) }));
+    return list.map((r) => {
+      const child = children.find((c) => c.id === r.childId) || {};
+      const reward = rewards.find((w) => w.id === r.rewardId) || {};
+      return {
+        ...r,
+        currentBalance: balance(events, r.childId),
+        childName: child.name,
+        childEmoji: child.emoji,
+        rewardName: reward.name,
+        rewardEmoji: reward.emoji,
+      };
+    });
   });
 
   app.post("/api/redemptions/:id/approve", async (req, reply) => {

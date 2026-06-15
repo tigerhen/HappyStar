@@ -98,6 +98,8 @@ test("parent lists pending redemptions and approves with deduction", async () =>
   const pending = list.json();
   assert.ok(pending.length >= 1);
   const target = pending.find((r) => r.childId === "haolin");
+  assert.equal(target.childName, "王颢霖");
+  assert.ok(target.rewardName);
 
   const before = await app.inject({ method: "POST", url: "/api/login", payload: { role: "child", childId: "haolin", pin: "0000" } });
   const childCookie = before.headers["set-cookie"];
