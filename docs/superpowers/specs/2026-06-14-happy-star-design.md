@@ -71,11 +71,14 @@
     "emoji": "📚",
     "points": 10,
     "dailyLimit": 1,
+    "weeklyDays": 5,             // 每周可做天数（作业类=5）；缺省视为 7
+    "core": true,                // 核心任务，计入“基础”产能场景；缺省 false
     "enabled": true
   }
 ]
 ```
 - `dailyLimit`：每个孩子每天可完成的次数上限（按自然日，00:00 重置）。
+- `weeklyDays` / `core`：仅用于家长端「产能总览」估算，不影响打卡/加分逻辑。
 
 ### `rewards.json`（奖励定义）
 ```json
@@ -133,6 +136,7 @@
 3. **每日上限**：完成任务前，后端统计该孩子当天（本地自然日）该任务的 `task` 事件数量，达到 `dailyLimit` 则拒绝并返回提示；前端同步置灰。
 4. **兑换流程**：孩子申请（不扣分）→ 家长通过（校验余额→扣分→若有限库存则减 1）/ 拒绝（不扣分）。
 5. **当前积分**实时由 `events` 汇总计算，不单独存储，避免数据不一致。
+6. **产能总览（家长端）**：纯估算，不入库。每任务周产能 `= points × dailyLimit × weeklyDays`；三场景周产能：基础 = 仅核心任务之和、现实 = `round(满分 × 0.8)`、满分 = 全部启用任务之和。每个奖励的预计到手周数 `= round(cost / 场景周产能, 1)`；场景产能为 0 时记 `null`（显示「—」）。定价经验值：实物奖励约 `1 元 ≈ 8 积分`。
 
 ## 6. 角色、权限与登录
 
@@ -214,11 +218,14 @@ GET    /api/redemptions?status=pending  (parent)
 POST   /api/redemptions/:id/approve     (parent)            → 校验余额→扣分→减库存
 POST   /api/redemptions/:id/reject      (parent)
 POST   /api/adjust                      (parent)            → 手动加分
-GET/POST/PUT/DELETE /api/admin/tasks    (parent)
-GET/POST/PUT/DELETE /api/admin/rewards  (parent)
+GET/POST/PUT/DELETE /api/admin/tasks    (parent)            → 含 PUT 行内编辑
+GET/POST/PUT/DELETE /api/admin/rewards  (parent)            → 含 PUT 行内编辑
+GET    /api/admin/capacity              (parent)            → 三场景周产能 + 各奖励预计到手
 GET    /api/logs?childId=&from=&to=     (parent)
 POST   /api/admin/pin                   (parent)            → 改某角色 PIN
 ```
+
+补充：`/api/me`（child）返回孩子档案（name/emoji/color），供主题化头部；`/api/redemptions` 回填 `childName/childEmoji/rewardName/rewardEmoji`，待审批卡显示真名。
 
 ## 9. 项目结构（建议）
 
@@ -243,8 +250,9 @@ happy-star/
 2. `npm install && npm run build`（构建前端到 `web/dist`，由后端托管）。
 3. `npm start` 启动；配 `deploy/happy-star.service` 设为开机自启。
 4. 浏览器访问 `http://<VM内网IP>:<端口>`。
-5. 首次启动引导：设置家长 PIN、确认两个孩子（姓名/头像/颜色已预填）、给孩子设 PIN。
+5. 首次启动**自动种子**：两个孩子（姓名/头像/颜色预填）+ 默认任务/奖励，所有 PIN 默认 `0000`；登录后在家长「PIN」页修改。无交互式向导。
 6. 备份：定期复制 `data/` 目录即可。
+7. 远端部署用 `deploy/deploy.ps1` + `deploy/remote-install.sh`（部署前自动快照 `data/`、绝不删数据），详见 README。
 
 ## 11. 验收要点
 

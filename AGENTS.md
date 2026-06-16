@@ -1,7 +1,7 @@
 # AGENTS.md — Happy Star
 
 家庭积分系统（"幸运星"）。Node + Fastify + React，JSON 文件存储，仅家庭内网。
-当前状态：✅ **已实现并完成 UI 精修**（main 分支，~36 commit）。所有决策的事实源在 `docs/superpowers/specs/2026-06-14-happy-star-design.md`。
+当前状态：✅ **已实现**——含 UI 精修、家长端产能总览（任务页响应式分栏）、任务/奖励行内编辑、部署数据安全加固（main 分支）。所有决策的事实源在 `docs/superpowers/specs/2026-06-14-happy-star-design.md`。
 
 ## 关键约束（红线——违反就是事故）
 
@@ -25,26 +25,29 @@ happy-star/
     package.json            # Fastify + @fastify/static + @fastify/cookie
     src/
       paths.js store.js time.js auth.js seed.js app.js index.js
-      domain/               # 纯函数：points / tasks / redeem / calendar（先于 route 写 TDD）
+      domain/               # 纯函数：points / tasks / redeem / calendar / capacity（先于 route 写 TDD）
       routes/               # auth / child / parent + guard.js
     test/                   # node:test，与 src/ 同形
   web/
     package.json            # React + Vite + react-router-dom + vitest
-    src/{pages,components}/
-  deploy/happy-star.service # systemd 守护（/opt/happy-star，User=happystar）
-  data/                     # 运行时 JSON，gitignore，由部署备份
+    src/{pages,components}/  # 含 CapacityPanel；家长任务页 ParentTasks 为响应式左右/上下分栏
+  deploy/
+    deploy.ps1              # Windows 开发机一键部署（打包→scp→远端 remote-install.sh）
+    remote-install.sh       # 远端安装/构建/重启；部署前快照 data，trap 兜底，绝不删数据
+    happy-star.service      # systemd 守护（/home/wh/apps/happy-star，User=wh）
+  data/                     # 运行时 JSON，gitignore，由部署备份/快照
   docs/
     prototypes/             # 视觉契约：task-list-states.html
     superpowers/
       specs/                # 唯一事实源：2026-06-14-happy-star-design.md
-      plans/                # 已完成实施计划（保留作回溯参考）：2026-06-14 + 2026-06-15
+      plans/                # 已完成实施计划（保留作回溯参考）：4 份（2026-06-14 ~ 06-15）
 ```
 
 ## 常用命令
 
 ```bash
 # 测试
-npm --prefix server test       # 后端 35 测试
+npm --prefix server test       # 后端 42 测试
 npm --prefix web test          # 前端 2 测试（TaskRow）
 npm test                       # 两者都跑（根 scripts）
 
@@ -53,10 +56,10 @@ npm run install:all            # server + web 一起装
 npm run build                  # 构建 web/dist（由后端 @fastify/static 托管）
 npm start                      # 默认 0.0.0.0:8080
 
-# 部署（Linux VM）
-# 把项目放到 /opt/happy-star，npm run install:all && npm run build
-# sudo cp deploy/happy-star.service /etc/systemd/system/ && sudo systemctl enable --now happy-star
-# sudo useradd -r -s /bin/false happystar && sudo chown -R happystar /opt/happy-star
+# 部署（从 Windows 开发机一键推到 Linux VM；详见 README）
+# .\deploy\deploy.ps1 -RemoteDir /home/wh/apps/happy-star -DataDir /home/wh/apps/happy-star/data
+# 远端 remote-install.sh：先构建→交换前移出 data→交换后移回，trap 兜底，部署前快照 hs-data-backup.<时间戳>
+# 开机自启可选装 systemd：sudo cp deploy/happy-star.service /etc/systemd/system/ && sudo systemctl enable --now happy-star
 
 # 隔离数据启动（开发时避免污染仓库 data/）
 $env:HAPPY_STAR_DATA = "C:\Users\ADMINI~1\AppData\Local\Temp\hs-test"   # PowerShell
