@@ -39,15 +39,36 @@ npm start             # 启动（默认 0.0.0.0:8080）
 
 首次启动会自动生成数据并写入 `data/`：两个孩子（颢霖、仲贤）与一组默认任务/奖励，**所有 PIN 默认为 `0000`**。登录后请在家长「PIN」页修改全部 PIN。
 
-### 开机自启（systemd）
+### 一键部署（从 Windows 开发机）
 
-1. 把项目放到 `/opt/happy-star`，`npm run install:all && npm run build`。
-2. 建用户：`sudo useradd -r -s /bin/false happystar && sudo chown -R happystar /opt/happy-star`。
-3. `sudo cp deploy/happy-star.service /etc/systemd/system/`。
-4. `sudo systemctl enable --now happy-star`。
+仓库自带 `deploy/deploy.ps1`：打包源码 → scp 上传 → 远端 `remote-install.sh` 安装/构建/重启。
+
+```powershell
+.\deploy\deploy.ps1 -RemoteDir /home/wh/apps/happy-star -DataDir /home/wh/apps/happy-star/data
+# 可选参数：-SshHost 192.168.31.222 -User wh -Port 8080
+```
+
+部署的数据安全保证（`remote-install.sh`）：
+
+- 部署前先把 `DataDir` 快照到 `hs-data-backup.<时间戳>`（保留最近 3 份）。
+- 先在 `.new` 目录安装+构建（不碰数据），仅在交换代码前一刻把数据移出、交换后立即移回。
+- 任何步骤失败都会通过 `trap` 把数据还原，**绝不删除数据目录**。
+- 重启：若已安装 systemd 单元且配了免密 sudo，则用 `systemctl restart`，否则回退 `nohup`。
+
+### 开机自启（systemd，推荐）
+
+不装 systemd 时 `remote-install.sh` 用 `nohup` 启动——重启服务器后不会自动拉起。装上单元即可开机自启 + 崩溃重启，并让部署走 `systemctl`：
+
+1. 项目放到 `/home/wh/apps/happy-star`，`npm run install:all && npm run build`。
+2. 按需核对 `deploy/happy-star.service` 的 `WorkingDirectory`/`HAPPY_STAR_DATA`/`User`/`ExecStart`（用 nvm 时把 `ExecStart` 的 node 换成 `which node` 的绝对路径）。
+3. `sudo cp deploy/happy-star.service /etc/systemd/system/`
+4. `sudo systemctl enable --now happy-star`
+5. （可选）给部署用户配置免密 `systemctl restart happy-star`，部署脚本即会自动改用 systemd 重启。
 
 默认 PIN 全为 `0000`，首次登录后请在家长「PIN」页修改全部 PIN。
 
-## 备份
+## 备份与恢复
 
-定期复制 `data/` 目录即可（数据就是若干 JSON 文件）。
+- 数据就是 `data/` 下若干 JSON 文件，复制即备份。
+- 每次远端部署会自动在 `DataDir` 上层留快照 `hs-data-backup.<时间戳>`（最近 3 份）。
+- 恢复：停服务 → 用某份快照覆盖 `data/` → 重启。

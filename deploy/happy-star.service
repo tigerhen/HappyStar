@@ -4,13 +4,15 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/happy-star
+WorkingDirectory=/home/wh/apps/happy-star
 Environment=PORT=8080
 Environment=HOST=0.0.0.0
-Environment=HAPPY_STAR_DATA=/opt/happy-star/data
-ExecStart=/usr/bin/node server/src/index.js
+Environment=HAPPY_STAR_DATA=/home/wh/apps/happy-star/data
+# If node is installed via nvm, replace /usr/bin/env node with the absolute
+# path from `which node` (systemd does not load the user's nvm PATH).
+ExecStart=/usr/bin/env node server/src/index.js
 Restart=always
-User=happystar
+User=wh
 
 [Install]
 WantedBy=multi-user.target
