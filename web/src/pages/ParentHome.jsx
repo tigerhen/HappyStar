@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { api } from "../api.js";
 import ParentApprovals from "./ParentApprovals.jsx";
 import ParentTasks from "./ParentTasks.jsx";
-import ParentRewardsAdmin from "./ParentRewardsAdmin.jsx";
+import ParentRewards from "./ParentRewards.jsx";
 import ParentAdjust from "./ParentAdjust.jsx";
 import ParentPins from "./ParentPins.jsx";
 import ParentLogs from "./ParentLogs.jsx";
@@ -31,7 +31,7 @@ export default function ParentHome({ onLogout }) {
       </div>
       {sec === "approvals" && <ParentApprovals />}
       {sec === "tasks" && <ParentTasks />}
-      {sec === "rewards" && <ParentRewardsAdmin />}
+      {sec === "rewards" && <ParentRewards />}
       {sec === "adjust" && <ParentAdjust />}
       {sec === "pins" && <ParentPins />}
       {sec === "logs" && <ParentLogs />}

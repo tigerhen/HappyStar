@@ -3,7 +3,7 @@ import { api } from "../api.js";
 
 const EMPTY = { name: "", emoji: "🎁", category: "material", cost: 50, stock: null, enabled: true };
 
-export default function ParentRewardsAdmin() {
+export default function ParentRewardsAdmin({ onChanged = () => {} }) {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(EMPTY);
   const [editingId, setEditingId] = useState(null);
@@ -20,7 +20,7 @@ export default function ParentRewardsAdmin() {
     if (!form.name) return;
     if (editingId) await api.adminUpdate("rewards", editingId, payload());
     else await api.adminCreate("rewards", payload());
-    setForm(EMPTY); setEditingId(null); reload();
+    setForm(EMPTY); setEditingId(null); reload(); onChanged();
   };
 
   const startEdit = (r) => {
@@ -31,7 +31,7 @@ export default function ParentRewardsAdmin() {
     });
   };
   const cancel = () => { setForm(EMPTY); setEditingId(null); };
-  const remove = async (id) => { await api.adminDelete("rewards", id); if (id === editingId) cancel(); reload(); };
+  const remove = async (id) => { await api.adminDelete("rewards", id); if (id === editingId) cancel(); reload(); onChanged(); };
 
   return (
     <div>
