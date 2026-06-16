@@ -64,8 +64,10 @@ try {
   Ok ("Uploaded to " + $User + "@" + $SshHost + ":" + $remoteTar)
 
   Step ("3. Run remote-install.sh on " + $SshHost + " (install + build + restart)")
-  # Pass port + data dir as args to the remote script.
-  $remoteCmd = "bash deploy/remote-install.sh '" + $RemoteDir + "' '" + $DataDir + "' '" + $Port + "'"
+  # remote-install.sh lives inside the uploaded tar, not yet on the remote FS.
+  # Bootstrap-extract it to /tmp first, then run it (it re-extracts the full
+  # code into RemoteDir.new itself). Pass remote dir + data dir + port as args.
+  $remoteCmd = "rm -rf /tmp/hs-bootstrap && mkdir -p /tmp/hs-bootstrap && tar -xzf '" + $remoteTar + "' -C /tmp/hs-bootstrap && bash /tmp/hs-bootstrap/deploy/remote-install.sh '" + $RemoteDir + "' '" + $DataDir + "' '" + $Port + "'"
   ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 ("${User}@${SshHost}") $remoteCmd
   if ($LASTEXITCODE -ne 0) { Fail "Remote install exited $LASTEXITCODE" }
 
@@ -86,6 +88,6 @@ try {
   # Best-effort cleanup
   Remove-Item $tmpTar -ErrorAction SilentlyContinue
   if (Test-Path $tmpTar) { Remove-Item $tmpTar -Force }
-  ssh -o StrictHostKeyChecking=no ("${User}@${SshHost}") ("rm -f " + $remoteTar) -ErrorAction SilentlyContinue
+  try { ssh -o StrictHostKeyChecking=no ("${User}@${SshHost}") ("rm -f " + $remoteTar) } catch {}
   exit 1
 }
