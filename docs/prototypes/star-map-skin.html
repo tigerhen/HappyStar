@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Happy Star 幸运星图皮肤原型</title>
+<style>
+  :root {
+    --bg0: #020606;
+    --bg1: #061314;
+    --bg2: #0a2427;
+    --glass: rgba(9, 27, 30, .74);
+    --glass-strong: rgba(13, 39, 43, .9);
+    --line: rgba(184, 244, 235, .18);
+    --line-strong: rgba(207, 255, 244, .42);
+    --ink: #effdfa;
+    --muted: rgba(239, 253, 250, .62);
+    --dim: rgba(239, 253, 250, .36);
+    --gold: #f8d995;
+    --gold-2: #ffcc66;
+    --cyan: #8eeaf2;
+    --mint: #7ff0c3;
+    --pink: #ff88b1;
+    --blue: #7db8ff;
+    --purple: #b99cff;
+    --orange: #ffb86b;
+    --danger: #ff7a8a;
+    font-family: "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 61% 14%, rgba(82, 170, 174, .28), transparent 34%),
+      radial-gradient(circle at 27% 55%, rgba(84, 121, 125, .18), transparent 31%),
+      linear-gradient(135deg, var(--bg0), var(--bg1) 50%, #010303);
+  }
+
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  body::before {
+    opacity: .23;
+    background-image:
+      radial-gradient(circle, rgba(255, 255, 255, .52) 0 1px, transparent 1.4px),
+      radial-gradient(circle, rgba(142, 234, 242, .35) 0 1px, transparent 1.4px);
+    background-size: 112px 112px, 174px 174px;
+    background-position: 18px 34px, 62px 92px;
+  }
+
+  body::after {
+    background:
+      radial-gradient(circle at 50% 50%, transparent 0 46%, rgba(0, 0, 0, .42) 100%),
+      linear-gradient(90deg, rgba(0, 0, 0, .42), transparent 28%, transparent 72%, rgba(0, 0, 0, .35));
+  }
+
+  button, input, select { font: inherit; }
+  button { cursor: pointer; }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    padding: 22px clamp(14px, 3vw, 38px);
+  }
+
+  .topbar {
+    max-width: 1220px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 800;
+    letter-spacing: .2px;
+  }
+
+  .brand-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: #2a1800;
+    background: radial-gradient(circle at 35% 30%, #fff7d8, var(--gold) 58%, #b8832a);
+    box-shadow: 0 0 24px rgba(248, 217, 149, .5), 0 0 90px rgba(248, 217, 149, .14);
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .tab {
+    border: 1px solid var(--line);
+    background: rgba(8, 22, 24, .68);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 8px 13px;
+    transition: .18s ease;
+  }
+
+  .tab.active {
+    color: #241705;
+    background: linear-gradient(180deg, #ffe8a8, var(--gold-2));
+    box-shadow: 0 0 22px rgba(248, 217, 149, .28);
+  }
+
+  .stage {
+    max-width: 1220px;
+    min-height: 704px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(178, 241, 233, .13);
+    border-radius: 30px;
+    background:
+      radial-gradient(circle at 55% 34%, rgba(102, 198, 203, .17), transparent 31%),
+      radial-gradient(circle at 76% 76%, rgba(248, 217, 149, .08), transparent 24%),
+      linear-gradient(135deg, rgba(5, 12, 13, .92), rgba(9, 26, 28, .8));
+    box-shadow: 0 24px 95px rgba(0, 0, 0, .48), inset 0 0 86px rgba(125, 232, 240, .055);
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: .08;
+    background-image:
+      linear-gradient(rgba(142, 234, 242, .35) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(142, 234, 242, .28) 1px, transparent 1px);
+    background-size: 52px 52px;
+    mask-image: radial-gradient(circle at 50% 45%, #000 0 52%, transparent 84%);
+  }
+
+  .view {
+    display: none;
+    position: relative;
+    z-index: 1;
+    min-height: 704px;
+    padding: 24px;
+  }
+
+  .view.active { display: block; }
+
+  .glass {
+    background: linear-gradient(180deg, rgba(19, 48, 52, .82), rgba(8, 22, 24, .72));
+    border: 1px solid var(--line);
+    box-shadow: 0 10px 36px rgba(0, 0, 0, .32), inset 0 0 24px rgba(142, 234, 242, .05);
+    backdrop-filter: blur(12px);
+    border-radius: 22px;
+  }
+
+  .muted { color: var(--muted); }
+  .tiny { color: var(--dim); font-size: 12px; }
+  .screen-title { margin: 0 0 4px; font-size: 25px; font-weight: 850; letter-spacing: .1px; }
+
+  .cta {
+    border: 0;
+    border-radius: 999px;
+    padding: 10px 17px;
+    color: #201405;
+    font-weight: 800;
+    background: linear-gradient(180deg, #ffe8ad, var(--gold-2));
+    box-shadow: 0 0 20px rgba(255, 204, 102, .32);
+    transition: transform .12s ease, opacity .18s ease;
+  }
+
+  .cta:active { transform: scale(.96); }
+  .cta:disabled { opacity: .68; cursor: default; }
+
+  .ghost {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 9px 14px;
+    color: var(--ink);
+    background: rgba(255, 255, 255, .045);
+  }
+
+  .constellation {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .core {
+    position: absolute;
+    z-index: 4;
+    width: 122px;
+    height: 122px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    color: #2c1b05;
+    background: radial-gradient(circle at 38% 32%, #fff9dc, var(--gold) 55%, #8f6425);
+    box-shadow: 0 0 36px rgba(248, 217, 149, .78), 0 0 105px rgba(248, 217, 149, .18);
+  }
+
+  .core::before,
+  .core::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(248, 217, 149, .34);
+  }
+
+  .core::before {
+    inset: -14px;
+    animation: pulse 2.7s ease-in-out infinite;
+  }
+
+  .core::after {
+    inset: -27px;
+    opacity: .35;
+  }
+
+  .node {
+    position: absolute;
+    z-index: 5;
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    gap: 1px;
+    text-align: center;
+    color: var(--ink);
+    font-size: 12px;
+    line-height: 1.15;
+    border: 1px solid rgba(255, 255, 255, .34);
+    background:
+      radial-gradient(circle at 35% 28%, rgba(255, 255, 255, .9), var(--node, #7db8ff) 34%, rgba(17, 17, 35, .92) 72%);
+    box-shadow: 0 0 20px rgba(125, 184, 255, .42), 0 0 54px rgba(125, 184, 255, .12);
+    pointer-events: auto;
+    transition: transform .2s ease, box-shadow .25s ease, filter .25s ease;
+  }
+
+  .node:hover { filter: brightness(1.08); }
+  .node span { font-size: 18px; }
+  .node strong { max-width: 62px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .node small { color: rgba(255, 255, 255, .68); }
+  .node.done {
+    --node: var(--gold);
+    color: #241704;
+    box-shadow: 0 0 24px rgba(248, 217, 149, .82), 0 0 80px rgba(248, 217, 149, .2);
+  }
+
+  .node.done small { color: rgba(36, 23, 4, .65); }
+  .node.reward { --node: var(--purple); }
+
+  .spark {
+    position: absolute;
+    z-index: 2;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--mint);
+    box-shadow: 0 0 18px var(--mint);
+    animation: twinkle 1.8s ease-in-out infinite;
+  }
+
+  .command {
+    position: absolute;
+    z-index: 7;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    width: min(640px, calc(100% - 48px));
+    padding: 10px 12px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(180deg, rgba(236, 255, 252, .94), rgba(204, 238, 235, .9));
+    color: #153335;
+    box-shadow: 0 0 35px rgba(142, 234, 242, .25);
+  }
+
+  .command input {
+    flex: 1;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: #153335;
+  }
+
+  .command button {
+    border: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #12383a;
+    color: white;
+  }
+
+  .metric-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .metric {
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(2, 8, 9, .38);
+  }
+
+  .metric strong {
+    display: block;
+    margin-top: 4px;
+    color: var(--gold);
+    font-size: 25px;
+  }
+
+  .form-input {
+    width: 100%;
+    border: 1px solid rgba(184, 244, 235, .24);
+    border-radius: 14px;
+    padding: 10px 11px;
+    color: var(--ink);
+    background: rgba(255, 255, 255, .06);
+    outline: none;
+  }
+
+  .form-input:focus {
+    border-color: rgba(248, 217, 149, .7);
+    box-shadow: 0 0 0 3px rgba(248, 217, 149, .12);
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .row-name { flex: 1; min-width: 0; }
+  .row-name strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .reward-card {
+    display: grid;
+    grid-template-columns: 66px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .ring {
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 0 24px rgba(185, 156, 255, .26);
+  }
+
+  .ring span {
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #111f22;
+    font-size: 24px;
+  }
+
+  .float {
+    position: absolute;
+    z-index: 20;
+    color: var(--gold);
+    font-weight: 900;
+    text-shadow: 0 0 16px rgba(248, 217, 149, .72);
+    pointer-events: none;
+    animation: floatup 1s ease-out forwards;
+  }
+
+  .toast {
+    position: absolute;
+    z-index: 30;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid rgba(248, 217, 149, .35);
+    border-radius: 18px;
+    padding: 11px 16px;
+    color: #241704;
+    background: linear-gradient(180deg, #fff7d8, #f7d28a);
+    box-shadow: 0 0 35px rgba(248, 217, 149, .22);
+    animation: toast .22s ease-out;
+  }
+
+  .proto-note {
+    position: absolute;
+    z-index: 3;
+    left: 18px;
+    bottom: 14px;
+    max-width: 520px;
+    color: rgba(239, 253, 250, .34);
+    font-size: 11px;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(.92); opacity: .42; }
+    50% { transform: scale(1.12); opacity: .9; }
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: .35; transform: scale(.8); }
+    50% { opacity: 1; transform: scale(1.35); }
+  }
+
+  @keyframes flow {
+    0% { stroke-dashoffset: 190; opacity: .08; }
+    35% { opacity: .98; }
+    100% { stroke-dashoffset: 0; opacity: .22; }
+  }
+
+  @keyframes floatup {
+    0% { opacity: 0; transform: translateY(8px) scale(.9); }
+    30% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-34px) scale(1.05); }
+  }
+
+  @keyframes toast {
+    from { opacity: 0; transform: translate(-50%, -8px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  .flow-line {
+    stroke-dasharray: 12 178;
+    animation: flow .9s ease-out;
+  }
+
+  @media (max-width: 880px) {
+    .topbar { align-items: flex-start; flex-direction: column; }
+    .stage, .view { min-height: 900px; }
+    .metric-row { grid-template-columns: 1fr; }
+    .command {
+      position: relative;
+      left: auto;
+      bottom: auto;
+      transform: none;
+      width: 100%;
+      margin-top: 18px;
+    }
+    .wide-grid { grid-template-columns: 1fr !important; }
+    .side-panel {
+      position: relative !important;
+      left: auto !important;
+      right: auto !important;
+      top: auto !important;
+      bottom: auto !important;
+      width: 100% !important;
+      margin-top: 500px;
+    }
+    .reward-side { margin-top: 460px; }
+    .reward-card { grid-template-columns: 56px 1fr; }
+    .reward-card .cta, .reward-card .ghost { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">★</span>
+      <div>
+        Happy Star
+        <div class="tiny">Lucky Star Map Prototype</div>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="原型视图">
+      <button class="tab active" data-view="login">登录</button>
+      <button class="tab" data-view="tasks">孩子任务</button>
+      <button class="tab" data-view="rewards">奖励星球</button>
+      <button class="tab" data-view="parent">家长控制台</button>
+    </nav>
+  </header>
+
+  <section class="stage">
+    <section id="login" class="view active"></section>
+    <section id="tasks" class="view"></section>
+    <section id="rewards" class="view"></section>
+    <section id="parent" class="view"></section>
+    <div class="proto-note">视觉契约：深色星图、玻璃面板、能量核心、任务星点、奖励星球、产能导航。未通过用户验收前不改生产 UI。</div>
+  </section>
+</main>
+
+<script>
+const state = {
+  activeChild: "haolin",
+  toast: "",
+  children: [
+    { id: "haolin", name: "王颢霖", emoji: "👧", points: 248, color: "#ff88b1" },
+    { id: "zhongxian", name: "王仲贤", emoji: "👦", points: 136, color: "#7db8ff" }
+  ],
+  tasks: [
+    { id: "homework", name: "完成作业", emoji: "📚", points: 10, done: 0, limit: 1, x: 43, y: 33, color: "#f8d995", core: true },
+    { id: "read", name: "主动阅读", emoji: "📖", points: 2, done: 1, limit: 2, x: 27, y: 58, color: "#7db8ff", core: true },
+    { id: "clean", name: "打扫卫生", emoji: "🧹", points: 6, done: 0, limit: 1, x: 62, y: 61, color: "#7ff0c3", core: false },
+    { id: "help", name: "帮助他人", emoji: "💗", points: 3, done: 2, limit: 2, x: 73, y: 32, color: "#ff88b1", core: false }
+  ],
+  rewards: [
+    { id: "coins", name: "蛋币", emoji: "🪙", cost: 480, etaBase: "6.2周", etaReal: "3.7周", etaMax: "3.0周", progress: 52, x: 73, y: 34 },
+    { id: "book", name: "书籍", emoji: "📘", cost: 120, etaBase: "1.5周", etaReal: "0.9周", etaMax: "0.7周", progress: 100, x: 60, y: 59 },
+    { id: "day", name: "自由活动日", emoji: "🧭", cost: 300, etaBase: "3.8周", etaReal: "2.3周", etaMax: "1.9周", progress: 83, x: 80, y: 64 }
+  ]
+};
+
+const viewIds = ["login", "tasks", "rewards", "parent"];
+
+function child() {
+  return state.children.find(c => c.id === state.activeChild) || state.children[0];
+}
+
+function showView(id) {
+  document.querySelectorAll(".tab").forEach(btn => btn.classList.toggle("active", btn.dataset.view === id));
+  viewIds.forEach(view => document.getElementById(view).classList.toggle("active", view === id));
+}
+
+function lineSvg(points, core = { x: 50, y: 49 }) {
+  return `<svg class="constellation" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <filter id="glow"><feGaussianBlur stdDeviation=".65" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <linearGradient id="taskLine" x1="0" x2="1"><stop offset="0" stop-color="#f8d995"/><stop offset=".55" stop-color="#8eeaf2"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+    </defs>
+    ${points.map(p => `<line x1="${core.x}" y1="${core.y}" x2="${p.x}" y2="${p.y}" stroke="rgba(158,232,242,.4)" stroke-width=".18" filter="url(#glow)"/>`).join("")}
+    ${points.map(p => `<line class="flow-target-${p.id}" x1="${core.x}" y1="${core.y}" x2="${p.x}" y2="${p.y}" stroke="url(#taskLine)" stroke-width=".3" opacity="0"/>`).join("")}
+  </svg>`;
+}
+
+function nodeHtml(task) {
+  const done = task.done >= task.limit;
+  return `<button class="node ${done ? "done" : ""}" data-task-node="${task.id}" style="left:${task.x}%;top:${task.y}%;--node:${task.color};transform:translate(-50%,-50%)">
+    <span>${task.emoji}</span>
+    <strong>${task.name}</strong>
+    <small>${done ? "已点亮" : `+${task.points}★`}</small>
+  </button>`;
+}
+
+function ring(progress) {
+  return `conic-gradient(var(--gold) ${progress}%, rgba(255,255,255,.08) 0)`;
+}
+
+function sparkHtml() {
+  return [
+    [19, 28, .2], [28, 74, .7], [41, 20, .4], [57, 78, .1], [82, 24, .8], [88, 70, .35],
+    [12, 55, .9], [68, 16, .55], [47, 84, .6], [77, 48, .25]
+  ].map(([x, y, d]) => `<span class="spark" style="left:${x}%;top:${y}%;animation-delay:${d}s"></span>`).join("");
+}
+
+function renderLogin() {
+  document.getElementById("login").innerHTML = `
+    ${sparkHtml()}
+    ${lineSvg([{ id: "haolin", x: 35, y: 48 }, { id: "zhongxian", x: 50, y: 60 }, { id: "parent", x: 65, y: 48 }], { x: 50, y: 30 })}
+    <div class="core" style="left:50%;top:23%;transform:translate(-50%,-50%)"><div><strong>Happy Star</strong><br><span class="tiny">幸运入口</span></div></div>
+    <div style="position:absolute;left:50%;top:8%;transform:translateX(-50%);text-align:center;z-index:6;width:min(720px,90%)">
+      <h1 class="screen-title">越努力，越幸运</h1>
+      <p class="muted">选择一颗星球，进入你的幸运星图</p>
+    </div>
+    <div class="glass" style="position:absolute;z-index:6;left:50%;bottom:88px;transform:translateX(-50%);width:min(780px,calc(100% - 44px));padding:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+      ${state.children.map(c => `<button class="ghost login-card" data-child="${c.id}" data-go="tasks" style="padding:18px;border-radius:20px">
+        <div style="font-size:36px">${c.emoji}</div><strong>${c.name}</strong><div class="tiny">${c.points} 幸运星能量</div>
+      </button>`).join("")}
+      <button class="ghost login-card" data-go="parent" style="padding:18px;border-radius:20px"><div style="font-size:36px">👪</div><strong>家长</strong><div class="tiny">Mission Control</div></button>
+    </div>
+    <div class="command"><span>✦</span><input value="输入 PIN 后进入星图..." readonly><button>➜</button></div>
+  `;
+}
+
+function renderTasks() {
+  const c = child();
+  document.getElementById("tasks").innerHTML = `
+    ${sparkHtml()}
+    ${lineSvg(state.tasks)}
+    <div class="core" style="left:50%;top:49%;transform:translate(-50%,-50%)"><div><strong>${c.points}</strong><br><span class="tiny">幸运星能量</span></div></div>
+    ${state.tasks.map(nodeHtml).join("")}
+    <aside class="glass side-panel" style="position:absolute;z-index:8;right:24px;top:24px;width:326px;padding:18px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <span style="font-size:34px">${c.emoji}</span>
+        <div><h2 class="screen-title" style="font-size:20px">${c.name}</h2><div class="tiny">今日任务星图</div></div>
+      </div>
+      ${state.tasks.map(t => `
+        <div class="row" data-task-row="${t.id}">
+          <span style="font-size:20px">${t.emoji}</span>
+          <div class="row-name"><strong>${t.name}</strong><div class="tiny">${t.done}/${t.limit} · +${t.points}⭐ ${t.core ? "· 核心" : ""}</div></div>
+          ${t.done >= t.limit ? `<span style="color:var(--mint);font-weight:800">已点亮</span>` : `<button class="cta complete" data-task="${t.id}">打卡</button>`}
+        </div>`).join("")}
+    </aside>
+    <div class="command"><span>✦</span><input value="完成一个任务，就点亮一条星轨。" readonly><button>★</button></div>
+  `;
+}
+
+function rewardCard(reward) {
+  return `<article class="glass reward-card">
+    <div class="ring" style="background:${ring(reward.progress)}"><span>${reward.emoji}</span></div>
+    <div>
+      <strong>${reward.name}</strong>
+      <div class="tiny">需要 ${reward.cost} ⭐ · 基础 ${reward.etaBase} · 现实 ${reward.etaReal} · 满分 ${reward.etaMax}</div>
+    </div>
+    ${reward.progress >= 100 ? `<button class="cta claim" data-reward="${reward.id}">申请兑换</button>` : `<span class="muted">${reward.progress}%</span>`}
+  </article>`;
+}
+
+function renderRewards() {
+  document.getElementById("rewards").innerHTML = `
+    ${sparkHtml()}
+    ${lineSvg(state.rewards.map(r => ({ id: r.id, x: r.x, y: r.y })), { x: 32, y: 50 })}
+    <div class="core" style="left:32%;top:50%;transform:translate(-50%,-50%)"><div><strong>${child().points}</strong><br><span class="tiny">可用星能</span></div></div>
+    ${state.rewards.map(r => `<div class="node reward" style="left:${r.x}%;top:${r.y}%;transform:translate(-50%,-50%);--node:${r.progress >= 100 ? "var(--gold)" : "var(--purple)"}"><span>${r.emoji}</span><strong>${r.name}</strong><small>${r.progress}%</small></div>`).join("")}
+    <section class="glass side-panel reward-side" style="position:absolute;z-index:8;right:24px;top:24px;bottom:92px;width:452px;padding:18px;overflow:auto">
+      <h2 class="screen-title">奖励星球</h2>
+      <p class="muted">调好积分价，就能看见孩子抵达奖励的时间。</p>
+      <div style="display:grid;gap:12px;margin-top:16px">${state.rewards.map(rewardCard).join("")}</div>
+    </section>
+    <div class="command"><span>✦</span><input value="奖励不是终点，是努力航线上的一颗星球。" readonly><button>➜</button></div>
+  `;
+}
+
+function eta(cost, weekly) {
+  return (cost / weekly).toFixed(1) + "周";
+}
+
+function renderParent() {
+  const base = 78;
+  const realistic = 130;
+  const max = 162;
+  document.getElementById("parent").innerHTML = `
+    <section class="wide-grid" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,.9fr);gap:18px;min-height:620px">
+      <div class="glass" style="padding:18px;min-height:620px">
+        <h2 class="screen-title">Mission Control 家长控制台</h2>
+        <p class="muted">左侧编辑任务和奖励，右侧立即观察预计到手变化。</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px" class="wide-grid">
+          <div class="glass" style="padding:14px">
+            <strong>任务编辑</strong>
+            ${state.tasks.map(t => `<div class="row"><span>${t.emoji}</span><div class="row-name"><strong>${t.name}</strong><div class="tiny">+${t.points} · ${t.limit}/天 ${t.core ? "· 核心" : ""}</div></div><button class="ghost">编辑</button></div>`).join("")}
+          </div>
+          <div class="glass" style="padding:14px">
+            <strong>奖励编辑</strong>
+            ${state.rewards.map(r => `<label class="row"><span>${r.emoji}</span><div class="row-name"><strong>${r.name}</strong><div class="tiny">修改积分会刷新右侧 ETA</div></div><input class="form-input reward-cost" data-reward-cost="${r.id}" type="number" value="${r.cost}" style="width:92px"></label>`).join("")}
+          </div>
+        </div>
+      </div>
+      <aside class="glass" style="padding:18px;min-height:620px">
+        <h2 class="screen-title">星图导航仪</h2>
+        <p class="muted">每周产能与奖励抵达时间</p>
+        <div class="metric-row" style="margin:16px 0">
+          <div class="metric">基础<strong>${base}</strong><span class="tiny">分/周</span></div>
+          <div class="metric">现实 80%<strong>${realistic}</strong><span class="tiny">分/周</span></div>
+          <div class="metric">满分 100%<strong>${max}</strong><span class="tiny">分/周</span></div>
+        </div>
+        <div id="etaTable" style="display:grid;gap:10px">
+          ${state.rewards.map(r => `<div style="display:grid;grid-template-columns:1fr repeat(3,68px);gap:8px;align-items:center;border-top:1px solid var(--line);padding:10px 0"><strong>${r.emoji} ${r.name}</strong><span class="tiny">${eta(r.cost, base)}</span><span class="tiny">${eta(r.cost, realistic)}</span><span class="tiny">${eta(r.cost, max)}</span></div>`).join("")}
+        </div>
+      </aside>
+    </section>
+  `;
+}
+
+function showToast(message) {
+  const active = document.querySelector(".view.active");
+  const old = active.querySelector(".toast");
+  if (old) old.remove();
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+  active.appendChild(toast);
+  setTimeout(() => toast.remove(), 1700);
+}
+
+function burst(label, x = 50, y = 50) {
+  const active = document.querySelector(".view.active");
+  const el = document.createElement("div");
+  el.className = "float";
+  el.style.left = x + "%";
+  el.style.top = y + "%";
+  el.textContent = label;
+  active.appendChild(el);
+  setTimeout(() => el.remove(), 1100);
+}
+
+function triggerFlow(id) {
+  const line = document.querySelector(`.view.active .flow-target-${id}`);
+  if (!line) return;
+  line.classList.remove("flow-line");
+  void line.getBoundingClientRect();
+  line.style.opacity = "1";
+  line.classList.add("flow-line");
+}
+
+function updateRewardCost(id, value) {
+  const reward = state.rewards.find(r => r.id === id);
+  const parsed = Math.max(1, Number(value || 1));
+  if (!reward || !Number.isFinite(parsed)) return;
+  reward.cost = parsed;
+  reward.etaBase = eta(parsed, 78);
+  reward.etaReal = eta(parsed, 130);
+  reward.etaMax = eta(parsed, 162);
+  reward.progress = Math.min(100, Math.round(child().points / parsed * 100));
+  renderParent();
+}
+
+function bindInteractions() {
+  document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => showView(btn.dataset.view)));
+  document.addEventListener("click", event => {
+    const go = event.target.closest("[data-go]");
+    if (go) {
+      if (go.dataset.child) state.activeChild = go.dataset.child;
+      renderAll();
+      showView(go.dataset.go);
+      return;
+    }
+    const complete = event.target.closest(".complete");
+    if (complete) {
+      const task = state.tasks.find(t => t.id === complete.dataset.task);
+      if (!task || task.done >= task.limit) return;
+      task.done += 1;
+      const c = child();
+      c.points += task.points;
+      renderAll();
+      showView("tasks");
+      triggerFlow(task.id);
+      burst(`+${task.points} ⭐`, task.x + 4, task.y - 3);
+      showToast(`${task.name} 已点亮`);
+      return;
+    }
+    const claim = event.target.closest(".claim");
+    if (claim) {
+      const reward = state.rewards.find(r => r.id === claim.dataset.reward);
+      if (!reward) return;
+      claim.textContent = "已发送审批";
+      claim.disabled = true;
+      burst(`已申请 ${reward.emoji} ${reward.name}`, 64, 24);
+      showToast("兑换申请已发送给家长");
+    }
+  });
+  document.addEventListener("change", event => {
+    const input = event.target.closest("[data-reward-cost]");
+    if (!input) return;
+    updateRewardCost(input.dataset.rewardCost, input.value);
+    showView("parent");
+    showToast("预计到手已刷新");
+  });
+}
+
+function renderAll() {
+  renderLogin();
+  renderTasks();
+  renderRewards();
+  renderParent();
+}
+
+renderAll();
+bindInteractions();
+</script>
+</body>
+</html>
