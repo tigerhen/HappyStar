@@ -594,8 +594,8 @@
   .task-card {
     min-width: 180px;
     min-height: 74px;
-    margin-left: -8px;
-    padding: 14px 18px 14px 32px;
+    margin-left: -48px;
+    padding: 14px 18px 14px 60px;
     position: relative;
     z-index: 1;
     overflow: visible;
@@ -606,26 +606,6 @@
       radial-gradient(circle at 20% 12%, rgba(255,255,255,.06), transparent 28%);
   }
 
-  .task-card::before {
-    content: "";
-    position: absolute;
-    left: -24px;
-    top: 18px;
-    bottom: 18px;
-    width: 34px;
-    z-index: 0;
-    border: 1px solid color-mix(in srgb, var(--orb), transparent 74%);
-    border-right: 0;
-    border-radius: 18px 0 0 18px;
-    clip-path: polygon(0 28%, 100% 0, 100% 100%, 0 72%);
-    background:
-      linear-gradient(90deg, color-mix(in srgb, var(--orb), transparent 86%), rgba(8, 27, 35, .72));
-    box-shadow:
-      0 0 14px color-mix(in srgb, var(--orb), transparent 76%),
-      inset 0 1px 0 rgba(255,255,255,.08);
-    pointer-events: none;
-  }
-
   .reward-card {
     position: relative;
     z-index: 1;
@@ -633,43 +613,27 @@
     margin-left: -10px;
     padding: 16px 18px 16px 34px;
     overflow: visible;
+    border-left: 0;
+    border-radius: 0 var(--card-radius) var(--card-radius) 0;
   }
 
   .reward-card::before {
     content: "";
     position: absolute;
-    left: -42px;
-    top: 50%;
-    width: 62px;
-    height: 66px;
-    z-index: 0;
-    transform: translateY(-50%);
-    border: 1px solid rgba(179, 234, 238, .18);
-    border-right: 0;
-    border-radius: 999px 0 0 999px / 50%;
-    clip-path: polygon(0 35%, 100% 18%, 100% 82%, 0 65%);
+    left: -58px;
+    top: -1px;
+    width: 60px;
+    height: 2px;
+    z-index: 1;
+    border-radius: 999px;
     background:
-      radial-gradient(circle at 12% 50%, rgba(255,216,117,.18), transparent 28%),
-      linear-gradient(90deg, rgba(19, 59, 68, .20), rgba(11, 31, 38, .78) 58%, rgba(7, 24, 31, .62));
-    box-shadow:
-      0 0 22px rgba(183,131,255,.14),
-      inset 0 1px 0 rgba(255,255,255,.08);
+      linear-gradient(90deg, transparent 0, rgba(255,239,196,.26) 15%, rgba(255,239,196,.64) 66%, var(--line) 100%);
+    box-shadow: 0 0 13px rgba(255,216,117,.24);
     pointer-events: none;
   }
 
   .reward-card::after {
-    content: "";
-    position: absolute;
-    left: -32px;
-    top: 50%;
-    width: 38px;
-    height: 2px;
-    z-index: 1;
-    transform: translateY(-50%);
-    border-radius: 999px;
-    background: linear-gradient(90deg, rgba(255,239,196,.72), rgba(255,216,117,.22), transparent);
-    box-shadow: 0 0 12px rgba(255,216,117,.28);
-    pointer-events: none;
+    display: none;
   }
 
   .task-card > *,
@@ -1263,11 +1227,9 @@
     .orb-count { bottom: -7px; min-width: 34px; height: 20px; font-size: 11px; }
     .task-card,
     .reward-card { min-width: 164px; padding: 12px 15px; }
-    .task-card { margin-left: -7px; padding: 11px 14px 11px 28px; min-height: 68px; }
-    .task-card::before { left: -20px; top: 16px; bottom: 16px; width: 28px; }
+    .task-card { margin-left: -43px; padding: 11px 14px 11px 53px; min-height: 68px; }
     .reward-card { margin-left: -8px; padding: 12px 14px 12px 30px; }
-    .reward-card::before { left: -34px; width: 50px; height: 56px; }
-    .reward-card::after { left: -26px; width: 30px; }
+    .reward-card::before { left: -50px; width: 52px; }
     .reward-planet { width: 112px; height: 112px; }
     .planet-body { width: 98px; height: 98px; }
     .ring-back { width: 136px; height: 46px; }
