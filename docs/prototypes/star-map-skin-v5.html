@@ -577,7 +577,7 @@
     align-items: center;
   }
 
-  .task { gap: 12px; }
+  .task { gap: 0; }
   .reward { gap: 15px; }
 
   .task-card,
@@ -593,7 +593,16 @@
 
   .task-card {
     min-width: 180px;
-    padding: 15px 18px;
+    min-height: 74px;
+    margin-left: -13px;
+    padding: 14px 18px 14px 38px;
+    position: relative;
+    z-index: 1;
+    border-left-color: color-mix(in srgb, var(--orb), transparent 76%);
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--orb), transparent 91%), transparent 32%),
+      linear-gradient(180deg, rgba(11, 31, 38, .78), rgba(5, 17, 23, .68)),
+      radial-gradient(circle at 20% 12%, rgba(255,255,255,.06), transparent 28%);
   }
 
   .reward-card {
@@ -636,6 +645,7 @@
     border-radius: 50%;
     display: grid;
     place-items: center;
+    z-index: 2;
   }
 
   .orb-ring {
@@ -653,6 +663,11 @@
     border-radius: 50%;
     border: 1px solid color-mix(in srgb, var(--orb), white 30%);
     opacity: .75;
+  }
+
+  .task .orb-ring::after,
+  .task .orb-glass::before {
+    display: none;
   }
 
   .orb-glass {
@@ -1160,6 +1175,7 @@
     .orb-count { bottom: -7px; min-width: 34px; height: 20px; font-size: 11px; }
     .task-card,
     .reward-card { min-width: 164px; padding: 12px 15px; }
+    .task-card { margin-left: -12px; padding: 11px 14px 11px 34px; min-height: 68px; }
     .reward-planet { width: 112px; height: 112px; }
     .planet-body { width: 98px; height: 98px; }
     .ring-back { width: 136px; height: 46px; }
@@ -1294,23 +1310,31 @@
           <linearGradient id="rewardGold" x1="0" x2="1"><stop offset="0" stop-color="#fff7d7"/><stop offset=".45" stop-color="#ffd875"/><stop offset="1" stop-color="#b783ff"/></linearGradient>
         </defs>
         <g class="route-soft">
-          <path id="line-homework" d="M432 270 C332 210 218 132 72 118" stroke="url(#taskPink)"/>
-          <path id="line-read" d="M424 310 C302 312 176 276 42 268" stroke="url(#taskBlue)"/>
-          <path id="line-clean" d="M434 358 C330 398 234 430 96 444" stroke="url(#taskMint)"/>
-          <path id="line-help" d="M456 388 C360 468 284 544 148 552" stroke="#d4a9ff"/>
+          <path id="line-homework" d="M432 270 C380 228 350 152 316 125" stroke="url(#taskPink)"/>
+          <path id="line-read" d="M424 310 C370 310 340 282 311 274" stroke="url(#taskBlue)"/>
+          <path id="line-clean" d="M434 358 C394 388 370 411 346 423" stroke="url(#taskMint)"/>
+          <path id="line-help" d="M456 388 C426 456 430 526 421 559" stroke="#d4a9ff"/>
           <path id="line-coins" d="M578 262 C612 232 644 172 704 126" stroke="url(#rewardGold)"/>
           <path id="line-book" d="M579 310 C626 306 690 307 754 312" stroke="url(#rewardGold)"/>
           <path id="line-day" d="M574 356 C616 394 646 466 704 504" stroke="url(#rewardGold)"/>
         </g>
         <g>
           <circle class="route-star" cx="432" cy="270" r="2.7"/>
-          <circle class="route-star dim" cx="342" cy="216" r="2.4"/>
+          <circle class="route-star dim" cx="380" cy="228" r="2"/>
+          <circle class="route-star" cx="350" cy="152" r="2.3"/>
+          <circle class="route-star" cx="316" cy="125" r="3"/>
           <circle class="route-star" cx="424" cy="310" r="2.7"/>
-          <circle class="route-star dim" cx="302" cy="304" r="2.2"/>
+          <circle class="route-star dim" cx="370" cy="310" r="1.9"/>
+          <circle class="route-star" cx="340" cy="282" r="2.2"/>
+          <circle class="route-star" cx="311" cy="274" r="3"/>
           <circle class="route-star" cx="434" cy="358" r="2.6"/>
-          <circle class="route-star dim" cx="334" cy="398" r="2.2"/>
+          <circle class="route-star dim" cx="394" cy="388" r="1.9"/>
+          <circle class="route-star" cx="370" cy="411" r="2.1"/>
+          <circle class="route-star" cx="346" cy="423" r="3"/>
           <circle class="route-star" cx="456" cy="388" r="2.5"/>
-          <circle class="route-star dim" cx="360" cy="468" r="2.1"/>
+          <circle class="route-star dim" cx="426" cy="456" r="1.9"/>
+          <circle class="route-star" cx="430" cy="526" r="2.1"/>
+          <circle class="route-star" cx="421" cy="559" r="3"/>
           <circle class="route-star" cx="578" cy="262" r="2.8"/>
           <circle class="route-star dim" cx="598" cy="242" r="1.9"/>
           <circle class="route-star" cx="618" cy="214" r="2.3"/>
@@ -1331,10 +1355,10 @@
           <circle class="route-star dim" cx="696" cy="502" r="1.8"/>
         </g>
         <g>
-          <circle class="route-node" cx="72" cy="118" r="4"/>
-          <circle class="route-node" cx="42" cy="268" r="4"/>
-          <circle class="route-node" cx="96" cy="444" r="4"/>
-          <circle class="route-node" cx="148" cy="552" r="4"/>
+          <circle class="route-node" cx="316" cy="125" r="4"/>
+          <circle class="route-node" cx="311" cy="274" r="4"/>
+          <circle class="route-node" cx="346" cy="423" r="4"/>
+          <circle class="route-node" cx="421" cy="559" r="4"/>
           <circle class="route-node" cx="704" cy="126" r="4"/>
           <circle class="route-node" cx="754" cy="312" r="4"/>
           <circle class="route-node" cx="704" cy="504" r="4"/>
@@ -1353,7 +1377,7 @@
         <button class="task-orb" aria-label="完成作业">
           <span class="orb-ring"></span>
           <span class="orb-glass">
-            <svg class="orb-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M12 17c8-4 15-2 20 4v29c-5-6-12-8-20-4V17z" fill="#fff7ef" stroke="#ffe4d6" stroke-width="3" stroke-linejoin="round"/><path d="M32 21c5-6 12-8 20-4v29c-8-4-15-2-20 4V21z" fill="#fff7ef" stroke="#ffe4d6" stroke-width="3" stroke-linejoin="round"/><path d="M16 19c6-2 11-1 16 3v28c-5-5-10-7-16-5V19z" fill="#ffc3d9" opacity=".55"/><path d="M32 22c5-4 10-5 16-3v26c-6-2-11 0-16 5V22z" fill="#ffd7e7" opacity=".48"/><path d="M18 27h8M18 34h7M39 27h8M39 34h7" stroke="#b54f77" stroke-width="2.4" stroke-linecap="round"/><path d="M32 21v29" stroke="#e8a1bd" stroke-width="2.5" stroke-linecap="round"/></svg>
+            <svg class="orb-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M12 18c7-4 14-3 20 3v29c-6-6-13-8-20-4V18z" fill="#fff4ec" stroke="#ffe6d8" stroke-width="3" stroke-linejoin="round"/><path d="M32 21c6-6 13-7 20-3v28c-7-4-14-2-20 4V21z" fill="#fff4ec" stroke="#ffe6d8" stroke-width="3" stroke-linejoin="round"/><path d="M17 22c5-1 10 0 15 4M17 30c5-1 10 0 15 4M47 22c-5-1-10 0-15 4M47 30c-5-1-10 0-15 4" stroke="#c85c86" stroke-width="2.4" stroke-linecap="round"/><path d="M32 21v29" stroke="#e5a0bb" stroke-width="2.5" stroke-linecap="round"/><path d="M49 13l1.8 4 4.2.6-3 2.9.7 4.1-3.7-2-3.7 2 .7-4.1-3-2.9 4.2-.6L49 13z" fill="#ffe58e"/></svg>
           </span>
           <span class="orb-count">1/1</span>
           <span class="done-badge">✓</span>
@@ -1365,7 +1389,7 @@
         <button class="task-orb" aria-label="主动阅读">
           <span class="orb-ring"></span>
           <span class="orb-glass">
-            <svg class="orb-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M17 12h25a7 7 0 0 1 7 7v33H25a8 8 0 0 0-8 6V12z" fill="#bdeeff" stroke="#e8fbff" stroke-width="3" stroke-linejoin="round"/><path d="M17 13v37h29" stroke="#236eb8" stroke-width="3.2" stroke-linecap="round"/><path d="M24 21h16M24 29h16M24 37h12" stroke="#236eb8" stroke-width="2.6" stroke-linecap="round"/><path d="M42 15v18l-4-3-4 3V14" fill="#ff9ac4" stroke="#d75082" stroke-width="2" stroke-linejoin="round"/><path d="M21 16c8 3 16 3 24 0" stroke="#fff" stroke-width="2" opacity=".55"/></svg>
+            <svg class="orb-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M15 15h28a7 7 0 0 1 7 7v30H24a9 9 0 0 0-9 7V15z" fill="#c5f1ff" stroke="#ecfbff" stroke-width="3" stroke-linejoin="round"/><path d="M15 16v36h33" stroke="#226fb6" stroke-width="3" stroke-linecap="round"/><path d="M23 24h17M23 32h17M23 40h12" stroke="#226fb6" stroke-width="2.6" stroke-linecap="round"/><path d="M43 16v19l-5-3.5L33 35V15" fill="#ff8ebf" stroke="#d94b82" stroke-width="2.2" stroke-linejoin="round"/><path d="M50 11l1.2 2.8 3 .5-2.1 2.1.5 3-2.6-1.5-2.6 1.5.5-3-2.1-2.1 3-.5L50 11z" fill="#ffe58e"/></svg>
           </span>
           <span class="orb-count">2/2</span>
           <span class="done-badge">✓</span>
@@ -1377,7 +1401,7 @@
         <button class="task-orb" aria-label="打扫卫生">
           <span class="orb-ring"></span>
           <span class="orb-glass">
-            <svg class="orb-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M39 8l8 5-24 33-8-5L39 8z" fill="#ffe9a8" stroke="#fff6cc" stroke-width="3" stroke-linejoin="round"/><path d="M21 42l-10 13h32l-6-18c-4 4-9 6-16 5z" fill="#ffad65" stroke="#ffe0a7" stroke-width="3" stroke-linejoin="round"/><path d="M18 53v5M25 48v10M32 48v10M39 53v5" stroke="#8a4f24" stroke-width="2.3" stroke-linecap="round"/><path d="M38 13l5 3" stroke="#b9782e" stroke-width="3" stroke-linecap="round"/><path d="M24 43c4 2 8 2 13-1" stroke="#fff2bf" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg class="orb-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M41 8l7 5-23 31-7-5L41 8z" fill="#ffe7a5" stroke="#fff7cc" stroke-width="3" stroke-linejoin="round"/><path d="M22 41c6 2 12 0 16-5l6 19H10l12-14z" fill="#ffad65" stroke="#ffe0a7" stroke-width="3" stroke-linejoin="round"/><path d="M17 53v5M24 48v10M31 48v10M38 52v6" stroke="#854a22" stroke-width="2.4" stroke-linecap="round"/><path d="M39 13l5 3" stroke="#ad6b24" stroke-width="3" stroke-linecap="round"/><path d="M11 21l2 4 4 .6-3 2.9.8 4.1-3.8-2-3.8 2 .8-4.1-3-2.9 4-.6 2-4z" fill="#90f5df" opacity=".9"/><path d="M24 43c4 2 9 1 13-2" stroke="#fff1bf" stroke-width="2.2" stroke-linecap="round"/></svg>
           </span>
           <span class="orb-count">1/1</span>
           <span class="done-badge">✓</span>
@@ -1389,7 +1413,7 @@
         <button class="task-orb" aria-label="帮助他人">
           <span class="orb-ring"></span>
           <span class="orb-glass">
-            <svg class="orb-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 53S12 40 12 25c0-8 5-13 12-13 4 0 7 2 8 5 1-3 4-5 8-5 7 0 12 5 12 13 0 15-20 28-20 28z" fill="#ff9ede" stroke="#ffe1f4" stroke-width="3" stroke-linejoin="round"/><path d="M20 25c0-4 3-7 7-7" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".62"/><path d="M24 31c3 5 6 8 8 9 2-1 6-4 9-9" stroke="#fff5fb" stroke-width="3" stroke-linecap="round"/><path d="M32 48c6-4 13-10 16-18" stroke="#d15ac0" stroke-width="2" stroke-linecap="round" opacity=".5"/></svg>
+            <svg class="orb-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 43s-13-8.5-13-19c0-5.6 3.7-9 8.3-9 2.5 0 4.3 1.2 4.7 3.2.6-2 2.4-3.2 4.8-3.2 4.6 0 8.2 3.4 8.2 9 0 10.5-13 19-13 19z" fill="#ff9ede" stroke="#ffe0f5" stroke-width="3" stroke-linejoin="round"/><path d="M18 38c4 0 8 2.2 12 6l3 3c2 2 5.5 2.4 8 .5l11-8.5" stroke="#fff1fb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 42l11 10" stroke="#d778ff" stroke-width="4.4" stroke-linecap="round"/><path d="M51 39l-8 7" stroke="#d778ff" stroke-width="4.4" stroke-linecap="round"/><path d="M25 24c0-2.5 1.7-4.3 4.1-4.3" stroke="#fff" stroke-width="2.7" stroke-linecap="round" opacity=".72"/></svg>
           </span>
           <span class="orb-count">1/2</span>
           <span class="done-badge">✓</span>
