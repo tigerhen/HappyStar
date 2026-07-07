@@ -905,75 +905,103 @@
   .command {
     position: absolute;
     left: 50%;
-    bottom: 25px;
+    bottom: 22px;
     z-index: 35;
     transform: translateX(-50%);
-    width: min(820px, calc(100vw - 650px));
-    min-width: 560px;
-    height: 76px;
+    width: min(660px, calc(100vw - 690px));
+    min-width: 520px;
+    height: 60px;
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 8px 12px 8px 82px;
-    border: 1px solid var(--line-strong);
-    border-radius: 34px;
+    gap: 14px;
+    padding: 6px 8px 6px 70px;
+    border: 1px solid rgba(159, 216, 220, .28);
+    border-radius: 999px;
     background:
-      linear-gradient(180deg, rgba(9, 27, 35, .88), rgba(4, 15, 21, .82)),
-      radial-gradient(circle at 8% 50%, rgba(255,216,117,.18), transparent 22%);
+      linear-gradient(180deg, rgba(11, 31, 39, .84), rgba(2, 10, 17, .88)),
+      radial-gradient(circle at 10% 50%, rgba(255,216,117,.2), transparent 16%),
+      radial-gradient(circle at 88% 45%, rgba(130, 147, 255, .16), transparent 20%);
     box-shadow:
-      0 0 30px rgba(114,234,215,.18),
-      inset 0 1px 0 rgba(255,255,255,.12),
-      inset 0 0 26px rgba(114,234,215,.06);
+      0 0 20px rgba(114,234,215,.16),
+      0 0 40px rgba(66, 88, 152, .12),
+      inset 0 1px 0 rgba(255,255,255,.18),
+      inset 0 -13px 24px rgba(0,0,0,.34),
+      inset 0 0 22px rgba(114,234,215,.06);
     backdrop-filter: blur(16px);
+  }
+
+  .command::before {
+    content: "";
+    position: absolute;
+    inset: 5px 56px 5px 55px;
+    border-radius: 999px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.09), transparent 44%),
+      linear-gradient(90deg, rgba(255,255,255,.03), transparent 20%, transparent 78%, rgba(255,255,255,.05));
+    pointer-events: none;
   }
 
   .mascot {
     position: absolute;
-    left: -44px;
-    width: 90px;
-    height: 90px;
+    left: -34px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     display: grid;
     place-items: center;
     color: #9b5a08;
     background:
-      radial-gradient(circle at 34% 23%, rgba(255,255,255,.92) 0 11%, rgba(255,238,168,.96) 12% 28%, #ffd875 54%, #b77528 100%);
+      radial-gradient(circle at 36% 25%, rgba(255,255,255,.24) 0 9%, transparent 10%),
+      radial-gradient(circle at 52% 50%, rgba(52,115,96,.86) 0 57%, transparent 58%),
+      radial-gradient(circle at 50% 50%, rgba(30,82,73,.9) 0 61%, rgba(7,27,31,.98) 62% 100%);
+    border: 1px solid rgba(126, 239, 213, .28);
     box-shadow:
-      0 0 24px rgba(255,216,117,.78),
-      0 0 56px rgba(255,216,117,.24),
-      inset -10px -12px 24px rgba(122,72,7,.22),
-      inset 9px 8px 18px rgba(255,255,255,.35);
+      0 0 16px rgba(114,234,215,.26),
+      0 0 22px rgba(255,216,117,.35),
+      inset 0 0 18px rgba(114,234,215,.12),
+      inset 0 1px 0 rgba(255,255,255,.25);
   }
 
   .mascot svg {
-    width: 66px;
-    height: 66px;
-    filter: drop-shadow(0 0 7px rgba(255,255,255,.55));
+    width: 50px;
+    height: 50px;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,.5));
   }
 
   .slogan-spark {
-    width: 18px;
-    height: 18px;
+    position: relative;
+    z-index: 1;
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    margin-left: 0;
     color: #fff1b6;
-    filter: drop-shadow(0 0 10px rgba(255,216,117,.9));
+    filter: drop-shadow(0 0 10px rgba(255,216,117,.96));
   }
 
   .command input {
+    position: relative;
+    z-index: 1;
     flex: 1;
     min-width: 0;
     border: 0;
     outline: 0;
     color: #ffe8a8;
     background: transparent;
-    font-size: 25px;
+    font-size: 20px;
     font-weight: 900;
-    text-shadow: 0 0 16px rgba(255,216,117,.28);
+    letter-spacing: 0;
+    text-shadow:
+      0 0 10px rgba(255,216,117,.34),
+      0 1px 0 rgba(255,255,255,.12);
   }
 
   .send {
     position: relative;
-    width: 52px;
-    height: 52px;
+    z-index: 1;
+    flex: 0 0 auto;
+    width: 46px;
+    height: 46px;
     border: 1px solid rgba(255,255,255,.68);
     border-radius: 50%;
     color: white;
@@ -981,10 +1009,10 @@
     background:
       radial-gradient(circle at 31% 23%, rgba(255,255,255,.96) 0 12%, rgba(218,220,255,.78) 13% 30%, rgba(129,134,232,.74) 54%, rgba(57,61,148,.92) 100%);
     box-shadow:
-      0 0 20px rgba(157,156,255,.75),
-      0 0 42px rgba(93, 184, 255, .22),
-      inset -8px -10px 18px rgba(35,37,107,.4),
-      inset 8px 7px 16px rgba(255,255,255,.34);
+      0 0 17px rgba(157,156,255,.76),
+      0 0 28px rgba(93, 184, 255, .18),
+      inset -7px -9px 16px rgba(35,37,107,.42),
+      inset 8px 7px 15px rgba(255,255,255,.35);
   }
 
   .send::before {
@@ -1002,6 +1030,8 @@
   .send svg {
     position: relative;
     z-index: 1;
+    width: 23px;
+    height: 23px;
   }
 
   .msg-bar {
@@ -1132,9 +1162,10 @@
     .quick-grid { gap: 7px; }
     .quick { min-height: 52px; font-size: 12px; padding: 6px 4px; }
     .quick svg { width: 21px; height: 21px; }
-    .command { bottom: 12px; height: 66px; }
-    .mascot { width: 76px; height: 76px; left: -34px; }
-    .mascot svg { width: 56px; height: 56px; }
+    .command { bottom: 14px; height: 58px; min-width: 510px; }
+    .mascot { width: 60px; height: 60px; left: -32px; }
+    .mascot svg { width: 48px; height: 48px; }
+    .send { width: 44px; height: 44px; }
     .msg-bar { display: none; }
   }
 </style>
@@ -1384,8 +1415,8 @@
   </aside>
 
   <section class="command">
-    <span class="mascot" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M32 7l6.4 16.4 17.6.8-13.8 11.2 4.5 17.6L32 43.5 17.3 54l4.5-17.6L8 25.2l17.6-.8L32 7z" fill="currentColor"/><path d="M31 14l4.7 12.2 13 .6-10.1 8.2 3.3 12.8L31 40l-10.9 7.8L23.4 35l-10.1-8.2 13-.6L31 14z" fill="#fff1a7" opacity=".5"/><circle cx="25" cy="32" r="2.4" fill="#8c550a"/><circle cx="39" cy="32" r="2.4" fill="#8c550a"/><path d="M27 40c3.4 3 6.6 3 10 0" stroke="#8c550a" stroke-width="2.6" stroke-linecap="round"/><path d="M19 20l-4-2 4-2 2-4 2 4 4 2-4 2-2 4-2-4z" fill="#fff7ce"/><path d="M48 18l-2-1 2-1 1-2 1 2 2 1-2 1-1 2-1-2z" fill="#fff7ce"/></svg></span>
-    <svg class="slogan-spark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 6.2L21 10l-6.2 2.4L12 22l-2.8-9.6L3 10l6.6-1.8L12 2z"/></svg>
+    <span class="mascot" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M32 7.5l6.9 14 15.4 2.2-11.1 10.9 2.6 15.4L32 42.8 18.2 50l2.6-15.4L9.7 23.7l15.4-2.2L32 7.5z" fill="#ffd66d"/><path d="M31 14.6l4.8 9.7 10.8 1.6-7.8 7.6 1.9 10.7L31 39.1l-9.6 5.1 1.8-10.7-7.7-7.6 10.7-1.6L31 14.6z" fill="#fff3a8" opacity=".55"/><circle cx="24.8" cy="31.7" r="2.5" fill="#8a5a12"/><circle cx="39.2" cy="31.7" r="2.5" fill="#8a5a12"/><circle cx="20.8" cy="36.5" r="2.2" fill="#f0a85a" opacity=".68"/><circle cx="43.2" cy="36.5" r="2.2" fill="#f0a85a" opacity=".68"/><path d="M27.1 39.2c3.2 2.8 6.6 2.8 9.8 0" stroke="#8a5a12" stroke-width="2.5" stroke-linecap="round"/><path d="M20 16.8l-2.4-1.2L20 14.4l1.2-2.4 1.2 2.4 2.4 1.2-2.4 1.2-1.2 2.4-1.2-2.4z" fill="#fff8ce"/><path d="M46 19.2l-1.7-.8 1.7-.8.8-1.7.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7z" fill="#fff8ce"/></svg></span>
+    <svg class="slogan-spark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.1" fill="currentColor"/><path d="M12 2v5.5M12 16.5V22M2 12h5.5M16.5 12H22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
     <input value="越努力，越幸运 ✨" readonly>
     <button class="send" id="sendBtn" aria-label="发送"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </section>
