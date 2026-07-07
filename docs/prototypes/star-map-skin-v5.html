@@ -475,16 +475,33 @@
   .routes path {
     fill: none;
     stroke-linecap: round;
-    filter: drop-shadow(0 0 7px rgba(255,216,117,.45));
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 5px rgba(255,216,117,.38));
   }
 
   .route-soft {
-    opacity: .72;
+    opacity: .58;
+  }
+
+  .route-soft path {
+    stroke-width: 1.9;
   }
 
   .route-node {
     fill: #fff8df;
-    filter: drop-shadow(0 0 7px rgba(255,255,255,.75));
+    filter: drop-shadow(0 0 7px rgba(255,255,255,.74));
+  }
+
+  .route-star {
+    fill: #fff8df;
+    opacity: .9;
+    filter:
+      drop-shadow(0 0 5px rgba(255,255,255,.88))
+      drop-shadow(0 0 12px rgba(255,216,117,.42));
+  }
+
+  .route-star.dim {
+    opacity: .48;
   }
 
   .energy-core {
@@ -1277,16 +1294,43 @@
           <linearGradient id="rewardGold" x1="0" x2="1"><stop offset="0" stop-color="#fff7d7"/><stop offset=".45" stop-color="#ffd875"/><stop offset="1" stop-color="#b783ff"/></linearGradient>
         </defs>
         <g class="route-soft">
-          <path id="line-homework" d="M500 310 C382 238 240 138 72 118" stroke="url(#taskPink)" stroke-width="3"/>
-          <path id="line-read" d="M500 310 C360 310 192 276 42 268" stroke="url(#taskBlue)" stroke-width="3"/>
-          <path id="line-clean" d="M500 310 C362 386 244 428 96 444" stroke="url(#taskMint)" stroke-width="3"/>
-          <path id="line-help" d="M500 310 C386 448 292 544 148 552" stroke="#d4a9ff" stroke-width="3"/>
-          <path id="line-coins" d="M500 310 C606 220 650 142 704 126" stroke="url(#rewardGold)" stroke-width="3"/>
-          <path id="line-book" d="M500 310 C616 304 700 306 754 312" stroke="url(#rewardGold)" stroke-width="3"/>
-          <path id="line-day" d="M500 310 C596 404 650 480 704 504" stroke="url(#rewardGold)" stroke-width="3"/>
+          <path id="line-homework" d="M432 270 C332 210 218 132 72 118" stroke="url(#taskPink)"/>
+          <path id="line-read" d="M424 310 C302 312 176 276 42 268" stroke="url(#taskBlue)"/>
+          <path id="line-clean" d="M434 358 C330 398 234 430 96 444" stroke="url(#taskMint)"/>
+          <path id="line-help" d="M456 388 C360 468 284 544 148 552" stroke="#d4a9ff"/>
+          <path id="line-coins" d="M578 262 C612 232 644 172 704 126" stroke="url(#rewardGold)"/>
+          <path id="line-book" d="M579 310 C626 306 690 307 754 312" stroke="url(#rewardGold)"/>
+          <path id="line-day" d="M574 356 C616 394 646 466 704 504" stroke="url(#rewardGold)"/>
         </g>
         <g>
-          <circle class="route-node" cx="500" cy="310" r="5"/>
+          <circle class="route-star" cx="432" cy="270" r="2.7"/>
+          <circle class="route-star dim" cx="342" cy="216" r="2.4"/>
+          <circle class="route-star" cx="424" cy="310" r="2.7"/>
+          <circle class="route-star dim" cx="302" cy="304" r="2.2"/>
+          <circle class="route-star" cx="434" cy="358" r="2.6"/>
+          <circle class="route-star dim" cx="334" cy="398" r="2.2"/>
+          <circle class="route-star" cx="456" cy="388" r="2.5"/>
+          <circle class="route-star dim" cx="360" cy="468" r="2.1"/>
+          <circle class="route-star" cx="578" cy="262" r="2.8"/>
+          <circle class="route-star dim" cx="598" cy="242" r="1.9"/>
+          <circle class="route-star" cx="618" cy="214" r="2.3"/>
+          <circle class="route-star dim" cx="638" cy="178" r="1.9"/>
+          <circle class="route-star" cx="666" cy="152" r="2.3"/>
+          <circle class="route-star dim" cx="692" cy="132" r="1.8"/>
+          <circle class="route-star" cx="579" cy="310" r="2.8"/>
+          <circle class="route-star dim" cx="613" cy="308" r="1.9"/>
+          <circle class="route-star" cx="648" cy="307" r="2.2"/>
+          <circle class="route-star dim" cx="686" cy="308" r="1.9"/>
+          <circle class="route-star" cx="722" cy="310" r="2.2"/>
+          <circle class="route-star dim" cx="746" cy="312" r="1.8"/>
+          <circle class="route-star" cx="574" cy="356" r="2.8"/>
+          <circle class="route-star dim" cx="600" cy="382" r="1.9"/>
+          <circle class="route-star" cx="622" cy="420" r="2.2"/>
+          <circle class="route-star dim" cx="642" cy="462" r="1.9"/>
+          <circle class="route-star" cx="670" cy="488" r="2.2"/>
+          <circle class="route-star dim" cx="696" cy="502" r="1.8"/>
+        </g>
+        <g>
           <circle class="route-node" cx="72" cy="118" r="4"/>
           <circle class="route-node" cx="42" cy="268" r="4"/>
           <circle class="route-node" cx="96" cy="444" r="4"/>
