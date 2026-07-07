@@ -685,9 +685,26 @@
     z-index: 2;
   }
 
+  .task-orb::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    z-index: 0;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 34% 24%, color-mix(in srgb, var(--orb), white 30%) 0 8%, transparent 26%),
+      radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--orb), transparent 68%) 0 48%, rgba(5, 18, 24, .96) 72%);
+    box-shadow:
+      0 0 24px color-mix(in srgb, var(--orb), transparent 62%),
+      inset 0 0 0 1px color-mix(in srgb, var(--orb), transparent 54%),
+      inset -14px -16px 22px rgba(0,0,0,.28);
+    pointer-events: none;
+  }
+
   .orb-ring {
     position: absolute;
     inset: 0;
+    z-index: 1;
     border-radius: 50%;
     border: 2px dashed color-mix(in srgb, var(--orb), transparent 28%);
     box-shadow: 0 0 18px color-mix(in srgb, var(--orb), transparent 45%);
@@ -709,6 +726,7 @@
 
   .orb-glass {
     position: relative;
+    z-index: 2;
     width: 78px;
     height: 78px;
     border-radius: 50%;
