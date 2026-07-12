@@ -35,10 +35,10 @@
     overflow: hidden;
     color: var(--text);
     background:
-      radial-gradient(circle at 52% 46%, rgba(28, 120, 127, .28), transparent 28%),
-      radial-gradient(circle at 28% 70%, rgba(20, 93, 106, .16), transparent 24%),
-      radial-gradient(circle at 76% 32%, rgba(102, 65, 169, .12), transparent 22%),
-      linear-gradient(135deg, #020609, #07141b 48%, #02070b);
+      radial-gradient(circle at 47% 46%, rgba(28, 120, 127, .12), transparent 25%),
+      radial-gradient(circle at 31% 69%, rgba(20, 93, 106, .07), transparent 22%),
+      radial-gradient(circle at 70% 34%, rgba(102, 65, 169, .055), transparent 20%),
+      linear-gradient(135deg, #010508, #051118 48%, #01060a);
   }
 
   body::before,
@@ -91,6 +91,16 @@
     overflow: hidden;
   }
 
+  .screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 90;
+    border: 1px solid rgba(205, 231, 230, .22);
+    border-radius: 16px;
+    pointer-events: none;
+  }
+
   .space-dust,
   .nebula,
   .constellation-bg {
@@ -112,13 +122,46 @@
     mask-image: radial-gradient(ellipse at center, #000 0 68%, transparent 100%);
   }
 
+  .space-dust::before,
+  .space-dust::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .space-dust::before {
+    opacity: .72;
+    background:
+      radial-gradient(circle at 25% 11%, rgba(255,255,255,.96) 0 1px, transparent 2px),
+      radial-gradient(circle at 42% 18%, rgba(255,221,140,.9) 0 1px, transparent 2px),
+      radial-gradient(circle at 52% 13%, rgba(157,226,255,.92) 0 1.2px, transparent 2.4px),
+      radial-gradient(circle at 61% 21%, rgba(255,255,255,.94) 0 1px, transparent 2.2px),
+      radial-gradient(circle at 76% 15%, rgba(255,221,140,.92) 0 1.1px, transparent 2.3px),
+      radial-gradient(circle at 84% 29%, rgba(255,255,255,.94) 0 1px, transparent 2.2px),
+      radial-gradient(circle at 24% 53%, rgba(255,255,255,.85) 0 1px, transparent 2px),
+      radial-gradient(circle at 64% 57%, rgba(255,226,158,.92) 0 1.1px, transparent 2.2px),
+      radial-gradient(circle at 55% 82%, rgba(169,230,255,.88) 0 1px, transparent 2.1px),
+      radial-gradient(circle at 72% 75%, rgba(255,255,255,.92) 0 1px, transparent 2.1px);
+    filter: drop-shadow(0 0 5px rgba(220,244,255,.65));
+  }
+
+  .space-dust::after {
+    opacity: .48;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,.58) 0 .65px, transparent 1.25px),
+      radial-gradient(circle, rgba(255,216,117,.42) 0 .6px, transparent 1.2px);
+    background-size: 73px 67px, 119px 103px;
+    background-position: 18px 29px, 54px 17px;
+  }
+
   .nebula {
     z-index: 2;
     background:
-      radial-gradient(ellipse at 47% 52%, rgba(255,216,117,.16), transparent 18%),
-      radial-gradient(ellipse at 49% 52%, rgba(93, 201, 206, .18), transparent 32%),
-      radial-gradient(ellipse at 38% 66%, rgba(36, 139, 153, .13), transparent 28%),
-      radial-gradient(ellipse at 66% 35%, rgba(148, 91, 205, .12), transparent 24%);
+      radial-gradient(ellipse at 45% 45%, rgba(255,216,117,.11), transparent 16%),
+      radial-gradient(ellipse at 45% 46%, rgba(93, 201, 206, .075), transparent 29%),
+      radial-gradient(ellipse at 36% 66%, rgba(36, 139, 153, .055), transparent 24%),
+      radial-gradient(ellipse at 68% 34%, rgba(148, 91, 205, .05), transparent 21%);
     filter: blur(.2px);
   }
 
@@ -136,6 +179,18 @@
   .constellation-bg circle {
     fill: rgba(239, 255, 252, .75);
     filter: drop-shadow(0 0 5px rgba(206,243,241,.45));
+  }
+
+  .constellation-bg .star-glints path {
+    stroke: rgba(255, 244, 205, .74);
+    stroke-width: 1.1;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 5px rgba(255,216,117,.58));
+  }
+
+  .constellation-bg .star-glints circle {
+    fill: #fff7d8;
+    filter: drop-shadow(0 0 7px rgba(255,216,117,.72));
   }
 
   .brand {
@@ -301,7 +356,10 @@
   }
 
   .left-panel { left: 16px; }
-  .right-panel { right: 18px; }
+  .right-panel {
+    right: 18px;
+    width: 312px;
+  }
 
   .panel-card {
     border: 1px solid var(--line);
@@ -431,7 +489,7 @@
     position: absolute;
     z-index: 15;
     inset: 0;
-    padding: 102px 302px 104px 302px;
+    padding: 102px 336px 104px 302px;
   }
 
   .star-map {
@@ -452,18 +510,18 @@
 
   .radar-rings {
     z-index: 4;
-    opacity: .72;
+    opacity: .82;
   }
 
   .radar-rings .ring-line {
     fill: none;
-    stroke: rgba(255,216,117,.18);
+    stroke: rgba(255,216,117,.16);
     stroke-width: 1;
   }
 
   .radar-rings .ring-dash {
     fill: none;
-    stroke: rgba(255,216,117,.3);
+    stroke: rgba(255,216,117,.25);
     stroke-width: 1.1;
     stroke-dasharray: 2 7;
   }
@@ -480,11 +538,11 @@
   }
 
   .route-soft {
-    opacity: .58;
+    opacity: .72;
   }
 
   .route-soft path {
-    stroke-width: 1.9;
+    stroke-width: 1.65;
   }
 
   .route-node {
@@ -506,24 +564,35 @@
 
   .energy-core {
     position: absolute;
-    left: 50%;
-    top: 50%;
+    left: 45%;
+    top: 45%;
     z-index: 12;
-    width: 154px;
-    height: 154px;
+    width: 168px;
+    height: 168px;
     transform: translate(-50%, -50%);
     border-radius: 50%;
+    isolation: isolate;
     display: grid;
     place-items: center;
     text-align: center;
-    border: 1px solid rgba(255,239,191,.56);
+    border: 1px solid rgba(255,237,182,.42);
     color: #fff1ba;
     background:
-      radial-gradient(circle at 45% 35%, rgba(255,246,197,.82) 0 6%, rgba(255,216,117,.62) 24%, rgba(167,101,36,.48) 54%, rgba(12,20,22,.72) 100%);
+      radial-gradient(circle at 43% 24%, rgba(255,250,215,.62) 0 4%, rgba(255,231,157,.22) 12%, transparent 25%),
+      radial-gradient(circle at 50% 45%, rgba(255,218,119,.34) 0 20%, rgba(157,104,48,.32) 43%, rgba(47,43,35,.55) 68%, rgba(5,18,23,.82) 100%),
+      linear-gradient(180deg, rgba(255,231,161,.10), rgba(4,17,22,.38));
     box-shadow:
-      0 0 24px rgba(255,216,117,.52),
-      0 0 68px rgba(255,216,117,.16),
-      inset 0 0 28px rgba(255,255,255,.15);
+      0 0 18px rgba(255,216,117,.46),
+      0 0 48px rgba(255,216,117,.15),
+      0 0 82px rgba(114,234,215,.055),
+      inset 0 1px 0 rgba(255,255,255,.22),
+      inset 0 -28px 48px rgba(2,10,14,.38),
+      inset 0 0 24px rgba(255,224,144,.10);
+  }
+
+  .energy-core > div {
+    position: relative;
+    z-index: 2;
   }
 
   .energy-core::before,
@@ -535,36 +604,45 @@
   }
 
   .energy-core::before {
-    inset: -12px;
-    border: 1px solid rgba(255,216,117,.38);
-    box-shadow: 0 0 22px rgba(255,216,117,.18), inset 0 0 20px rgba(255,216,117,.14);
+    z-index: 1;
+    inset: -9px;
+    border: 2px solid rgba(255,216,117,.10);
+    border-left-color: rgba(255,232,166,.92);
+    border-top-color: rgba(255,226,148,.50);
+    border-bottom-color: rgba(255,226,148,.72);
+    transform: rotate(-12deg);
+    box-shadow:
+      -9px 0 18px rgba(255,216,117,.34),
+      inset 11px 0 17px rgba(255,216,117,.12);
   }
 
   .energy-core::after {
-    inset: -30px;
-    border: 1px dashed rgba(255,216,117,.24);
+    z-index: 0;
+    inset: -33px;
+    border: 1px dashed rgba(255,216,117,.22);
+    box-shadow: inset 0 0 34px rgba(255,216,117,.07);
     animation: rotate 26s linear infinite;
   }
 
   .core-star {
-    width: 45px;
-    height: 45px;
-    margin: 0 auto 7px;
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 4px;
     color: #ffe28e;
-    filter: drop-shadow(0 0 8px rgba(255,216,117,.78));
+    filter: drop-shadow(0 0 8px rgba(255,216,117,.88)) drop-shadow(0 0 18px rgba(255,216,117,.38));
   }
 
   .core-title {
     color: #ffedb6;
-    font-size: 18px;
-    font-weight: 900;
+    font-size: 20px;
+    font-weight: 800;
     text-shadow: 0 2px 8px rgba(0,0,0,.82), 0 0 8px rgba(255,216,117,.22);
   }
 
   .core-score {
     margin-top: 4px;
     color: #ffe7a4;
-    font-size: 25px;
+    font-size: 27px;
     font-weight: 900;
     text-shadow: 0 2px 8px rgba(0,0,0,.84), 0 0 8px rgba(255,216,117,.2);
   }
@@ -607,9 +685,9 @@
     border-left: 0;
     border-radius: 0 var(--card-radius) var(--card-radius) 0;
     background:
-      linear-gradient(90deg, color-mix(in srgb, var(--orb), transparent 90%), transparent 38%),
-      radial-gradient(circle at 18% 12%, rgba(255,255,255,.105), transparent 33%),
-      linear-gradient(180deg, rgba(12, 34, 42, .36), rgba(5, 18, 24, .20));
+      linear-gradient(90deg, color-mix(in srgb, var(--orb), transparent 94%), transparent 40%),
+      radial-gradient(circle at 20% 12%, rgba(255,255,255,.055), transparent 34%),
+      linear-gradient(180deg, rgba(8, 25, 31, .58), rgba(3, 12, 17, .48));
   }
 
   .reward-card {
@@ -624,15 +702,15 @@
     align-content: center;
     overflow: visible;
     border-left: 0;
-    border-color: rgba(211,180,255,.22);
+    border-color: rgba(211,220,231,.16);
     border-radius: 0 var(--card-radius) var(--card-radius) 0;
-    background-color: rgba(43, 29, 86, .26);
+    background-color: rgba(4, 14, 20, .72);
     background-image: none;
     box-shadow:
-      0 14px 36px rgba(36, 20, 74, .28),
-      0 0 28px rgba(183,131,255,.12),
-      inset 0 1px 0 rgba(255,255,255,.11),
-      inset 0 0 26px rgba(211,180,255,.035);
+      0 14px 36px rgba(0, 0, 0, .24),
+      0 0 24px rgba(183,131,255,.055),
+      inset 0 1px 0 rgba(255,255,255,.08),
+      inset 0 0 22px rgba(211,180,255,.022);
   }
 
   .reward-card::before {
@@ -664,7 +742,8 @@
   .reward-card h3 {
     margin: 0 0 6px;
     font-size: 20px;
-    font-weight: 900;
+    color: #f7ead2;
+    font-weight: 750;
     white-space: nowrap;
   }
 
@@ -705,12 +784,12 @@
     z-index: 0;
     border-radius: 50%;
     background:
-      radial-gradient(circle at 34% 24%, color-mix(in srgb, var(--orb), white 30%) 0 8%, transparent 26%),
-      radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--orb), transparent 68%) 0 48%, rgba(5, 18, 24, .96) 72%);
+      radial-gradient(circle at 36% 24%, rgba(255,255,255,.055) 0 7%, transparent 21%),
+      radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--orb), transparent 87%) 0 46%, rgba(4, 15, 20, .96) 73%);
     box-shadow:
-      0 0 24px color-mix(in srgb, var(--orb), transparent 62%),
-      inset 0 0 0 1px color-mix(in srgb, var(--orb), transparent 54%),
-      inset -14px -16px 22px rgba(0,0,0,.28);
+      0 0 10px color-mix(in srgb, var(--orb), transparent 82%),
+      inset 0 0 0 1px color-mix(in srgb, var(--orb), transparent 66%),
+      inset -14px -16px 24px rgba(0,0,0,.38);
     pointer-events: none;
   }
 
@@ -720,7 +799,7 @@
     z-index: 1;
     border-radius: 50%;
     border: 2px dashed color-mix(in srgb, var(--orb), transparent 28%);
-    box-shadow: 0 0 18px color-mix(in srgb, var(--orb), transparent 45%);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--orb), transparent 58%);
   }
 
   .orb-ring::after {
@@ -752,8 +831,8 @@
       linear-gradient(180deg, color-mix(in srgb, var(--orb), transparent 62%), rgba(7, 23, 29, .86)),
       radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--orb), transparent 86%), transparent 64%);
     box-shadow:
-      0 0 22px color-mix(in srgb, var(--orb), transparent 32%),
-      0 0 44px color-mix(in srgb, var(--orb), transparent 78%),
+      0 0 16px color-mix(in srgb, var(--orb), transparent 42%),
+      0 0 34px color-mix(in srgb, var(--orb), transparent 82%),
       inset 0 1px 0 rgba(255,255,255,.18),
       inset 0 0 0 1px rgba(255,255,255,.05);
   }
@@ -821,10 +900,10 @@
   .task.help .done-badge { display: none; }
   .task.help.done .done-badge { display: grid; }
 
-  .task.homework { left: 4%; top: 11%; --orb: var(--pink); }
-  .task.read { left: 2%; top: 35%; --orb: var(--blue); }
-  .task.clean { left: 8%; top: 59%; --orb: var(--mint); }
-  .task.help { left: 13%; top: 81%; --orb: var(--purple); }
+  .task.homework { left: 4%; top: 8%; --orb: var(--pink); }
+  .task.read { left: 1%; top: 30%; --orb: var(--blue); }
+  .task.clean { left: 1%; top: 52%; --orb: var(--mint); }
+  .task.help { left: 6%; top: 73%; --orb: var(--purple); }
 
   .task .task-card { order: 2; }
 
@@ -853,13 +932,13 @@
     overflow: hidden;
     border: 1px solid rgba(226,199,255,.62);
     background:
-      radial-gradient(circle at 32% 21%, rgba(255,255,255,.70) 0 5%, rgba(255,255,255,.24) 13%, transparent 25%),
-      radial-gradient(circle at 68% 68%, rgba(84, 42, 162, .58), transparent 42%),
-      radial-gradient(circle at 48% 45%, rgba(199, 153, 255, .46), transparent 54%),
-      linear-gradient(150deg, rgba(166,113,235,.80), rgba(73,39,134,.86) 50%, rgba(33,19,72,.90));
+      radial-gradient(circle at 31% 20%, rgba(255,255,255,.76) 0 4%, rgba(255,255,255,.26) 12%, transparent 24%),
+      radial-gradient(circle at 68% 70%, rgba(73, 34, 151, .64), transparent 43%),
+      radial-gradient(circle at 44% 39%, rgba(218, 179, 255, .44), transparent 48%),
+      linear-gradient(150deg, rgba(158,106,225,.84), rgba(66,34,124,.90) 52%, rgba(25,14,57,.94));
     box-shadow:
-      0 0 30px rgba(183,131,255,.62),
-      0 0 72px rgba(183,131,255,.22),
+      0 0 24px rgba(183,131,255,.54),
+      0 0 54px rgba(183,131,255,.17),
       inset 0 1px 0 rgba(255,255,255,.16),
       inset 16px 18px 24px rgba(255,255,255,.08),
       inset -18px -20px 30px rgba(22, 9, 58, .46),
@@ -927,9 +1006,9 @@
     border-color: rgba(231,214,255,.42);
   }
 
-  .reward.coins { left: 62%; top: 9%; }
-  .reward.book { left: 68%; top: 39%; }
-  .reward.day { left: 62%; top: 70%; }
+  .reward.coins { left: 67%; top: 9%; }
+  .reward.book { left: 69%; top: 35%; }
+  .reward.day { left: 68%; top: 61%; }
 
   .eta {
     display: inline-flex;
@@ -963,12 +1042,12 @@
 
   .capacity-card {
     display: grid;
-    grid-template-columns: 56px 1fr 22px;
+    grid-template-columns: 52px minmax(0, 1fr) 22px;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     min-height: 104px;
     margin-top: 11px;
-    padding: 13px 14px;
+    padding: 13px 16px;
     border: 1px solid color-mix(in srgb, var(--cap), transparent 65%);
     border-radius: 14px;
     background:
@@ -1000,11 +1079,11 @@
   .quick-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    gap: 11px;
   }
 
   .quick {
-    min-height: 72px;
+    min-height: 92px;
     border: 1px solid var(--line);
     border-radius: 13px;
     color: var(--text);
@@ -1012,7 +1091,7 @@
     display: grid;
     place-items: center;
     gap: 5px;
-    padding: 8px 5px;
+    padding: 8px 6px;
   }
 
   .quick svg {
@@ -1025,16 +1104,16 @@
   .command {
     position: absolute;
     left: 50%;
-    bottom: 22px;
+    bottom: 31px;
     z-index: 35;
     transform: translateX(-50%);
-    width: min(660px, calc(100vw - 690px));
-    min-width: 520px;
-    height: 60px;
+    width: min(830px, calc(100vw - 700px));
+    min-width: 720px;
+    height: 78px;
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 6px 8px 6px 70px;
+    padding: 8px 10px 8px 44px;
     border: 1px solid rgba(159, 216, 220, .28);
     border-radius: 999px;
     background:
@@ -1053,7 +1132,7 @@
   .command::before {
     content: "";
     position: absolute;
-    inset: 5px 56px 5px 55px;
+    inset: 7px 70px 7px 32px;
     border-radius: 999px;
     background:
       linear-gradient(180deg, rgba(255,255,255,.09), transparent 44%),
@@ -1063,28 +1142,28 @@
 
   .mascot {
     position: absolute;
-    left: -34px;
-    width: 64px;
-    height: 64px;
+    left: -90px;
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
     display: grid;
     place-items: center;
     color: #9b5a08;
     background:
-      linear-gradient(180deg, rgba(38, 104, 88, .7), rgba(7, 31, 35, .9)),
-      radial-gradient(circle at 50% 50%, rgba(255,216,117,.1), transparent 58%);
+      radial-gradient(circle at 36% 24%, rgba(255,255,255,.10), transparent 24%),
+      linear-gradient(180deg, rgba(24, 73, 67, .72), rgba(5, 25, 30, .90));
     border: 1px solid rgba(126, 239, 213, .28);
     box-shadow:
-      0 0 15px rgba(114,234,215,.24),
-      0 0 18px rgba(255,216,117,.28),
+      0 0 18px rgba(114,234,215,.20),
+      0 0 25px rgba(255,216,117,.24),
       inset 0 1px 0 rgba(255,255,255,.16),
       inset 0 0 0 1px rgba(255,255,255,.04);
   }
 
   .mascot svg {
-    width: 50px;
-    height: 50px;
-    filter: drop-shadow(0 0 5px rgba(255,216,117,.38));
+    width: 78px;
+    height: 78px;
+    filter: drop-shadow(0 0 8px rgba(255,216,117,.46));
   }
 
   .slogan-spark {
@@ -1119,14 +1198,14 @@
     position: relative;
     z-index: 1;
     flex: 0 0 auto;
-    width: 46px;
-    height: 46px;
+    width: 58px;
+    height: 58px;
     border: 1px solid rgba(220,225,255,.62);
     border-radius: 50%;
     color: white;
     overflow: hidden;
     background:
-      linear-gradient(180deg, rgba(93, 102, 176, .52), rgba(28, 36, 82, .78));
+      linear-gradient(180deg, rgba(101, 112, 184, .42), rgba(27, 35, 78, .72));
     box-shadow:
       0 0 13px rgba(157,156,255,.48),
       0 0 24px rgba(93, 184, 255, .12),
@@ -1253,11 +1332,14 @@
     .progress-row { padding: 8px 0; }
     .streak-dots { gap: 6px; margin-top: 10px; }
     .streak-dots span { width: 9px; height: 9px; }
-    .main { padding: 88px 302px 82px 302px; }
+    .main { padding: 88px 336px 82px 302px; }
     .task.homework { left: -3%; }
     .task.read { left: -5%; }
     .task.clean { left: 0; }
     .task.help { left: 6%; }
+    .reward.coins { left: 58%; }
+    .reward.book { left: 59%; }
+    .reward.day { left: 58%; }
     .task-orb { width: 86px; height: 86px; }
     .orb-glass { width: 70px; height: 70px; }
     .orb-count { bottom: -7px; min-width: 34px; height: 20px; font-size: 11px; }
@@ -1271,10 +1353,10 @@
     .ring-back { width: 136px; height: 46px; }
     .ring-front { width: 132px; height: 44px; }
     .capacity-card {
-      grid-template-columns: 42px 1fr 18px;
+      grid-template-columns: 42px minmax(0, 1fr) 18px;
       min-height: 0;
       margin-top: 8px;
-      padding: 8px 10px;
+      padding: 8px 12px;
       gap: 8px;
     }
     .cap-icon { width: 38px; height: 38px; }
@@ -1284,7 +1366,7 @@
     .quick-grid { gap: 7px; }
     .quick { min-height: 52px; font-size: 12px; padding: 6px 4px; }
     .quick svg { width: 21px; height: 21px; }
-    .command { bottom: 14px; height: 58px; min-width: 510px; }
+    .command { bottom: 14px; height: 58px; min-width: 510px; padding-left: 70px; }
     .mascot { width: 60px; height: 60px; left: -32px; }
     .mascot svg { width: 48px; height: 48px; }
     .send { width: 44px; height: 44px; }
@@ -1307,13 +1389,21 @@
     <circle cx="769" cy="760" r="2.5"/><circle cx="835" cy="712" r="3"/><circle cx="916" cy="754" r="2.5"/><circle cx="987" cy="708" r="3"/><circle cx="1050" cy="748" r="2.5"/>
     <circle cx="330" cy="812" r="2.5"/><circle cx="390" cy="858" r="3"/><circle cx="458" cy="828" r="2.5"/>
     <circle cx="1220" cy="650" r="2.5"/><circle cx="1290" cy="604" r="3"/><circle cx="1352" cy="646" r="2.5"/>
+    <g class="star-glints">
+      <path d="M402 98v18M393 107h18"/><circle cx="402" cy="107" r="1.8"/>
+      <path d="M835 123v20M825 133h20"/><circle cx="835" cy="133" r="2"/>
+      <path d="M1208 137v22M1197 148h22"/><circle cx="1208" cy="148" r="2"/>
+      <path d="M978 326v20M968 336h20"/><circle cx="978" cy="336" r="1.9"/>
+      <path d="M1008 525v18M999 534h18"/><circle cx="1008" cy="534" r="1.8"/>
+    </g>
   </svg>
 
   <header class="brand">
     <span class="brand-mark" aria-hidden="true">
       <svg viewBox="0 0 64 64" fill="none">
-        <path d="M32 5l6.8 18.2L58 24l-15.1 11.8L48 55 32 44.1 16 55l5.1-19.2L6 24l19.2-.8L32 5z" fill="currentColor"/>
-        <path d="M32 14l4.3 11.4 12.1.5-9.5 7.4L42.1 45 32 38.2 21.9 45l3.2-11.7-9.5-7.4 12.1-.5L32 14z" stroke="#fff7d7" stroke-width="2"/>
+        <defs><linearGradient id="brandGold" x1="12" y1="8" x2="50" y2="56" gradientUnits="userSpaceOnUse"><stop stop-color="#fffbd7"/><stop offset=".48" stop-color="#ffd875"/><stop offset="1" stop-color="#a8611f"/></linearGradient></defs>
+        <path d="M32 5l6.8 18.2L58 24l-15.1 11.8L48 55 32 44.1 16 55l5.1-19.2L6 24l19.2-.8L32 5z" fill="url(#brandGold)" stroke="#fff0ad" stroke-width="1.4"/>
+        <path d="M32 14l4.3 11.4 12.1.5-9.5 7.4L42.1 45 32 38.2 21.9 45l3.2-11.7-9.5-7.4 12.1-.5L32 14z" fill="#fff3ab" opacity=".36"/>
       </svg>
     </span>
     <div>
@@ -1384,12 +1474,12 @@
   <section class="main">
     <div class="star-map">
       <svg class="radar-rings" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
-        <circle class="ring-line" cx="500" cy="310" r="72"/>
-        <circle class="ring-line" cx="500" cy="310" r="108"/>
-        <circle class="ring-line" cx="500" cy="310" r="146"/>
-        <circle class="ring-dash" cx="500" cy="310" r="90"/>
-        <circle class="ring-dash" cx="500" cy="310" r="128"/>
-        <path class="ring-line" d="M500 135v350M325 310h350M377 187l246 246M623 187 377 433"/>
+        <circle class="ring-line" cx="450" cy="279" r="82"/>
+        <circle class="ring-line" cx="450" cy="279" r="122"/>
+        <circle class="ring-line" cx="450" cy="279" r="168"/>
+        <circle class="ring-dash" cx="450" cy="279" r="102"/>
+        <circle class="ring-dash" cx="450" cy="279" r="145"/>
+        <path class="ring-line" d="M450 92v374M263 279h374M318 147l264 264M582 147 318 411"/>
       </svg>
 
       <svg class="routes" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
@@ -1400,64 +1490,65 @@
           <linearGradient id="rewardGold" x1="0" x2="1"><stop offset="0" stop-color="#fff7d7"/><stop offset=".45" stop-color="#ffd875"/><stop offset="1" stop-color="#b783ff"/></linearGradient>
         </defs>
         <g class="route-soft">
-          <path id="line-homework" d="M432 270 C380 228 350 152 316 125" stroke="url(#taskPink)"/>
-          <path id="line-read" d="M424 310 C370 310 340 282 311 274" stroke="url(#taskBlue)"/>
-          <path id="line-clean" d="M434 358 C394 388 370 411 346 423" stroke="url(#taskMint)"/>
-          <path id="line-help" d="M456 388 C426 456 430 526 421 559" stroke="#d4a9ff"/>
-          <path id="line-coins" d="M578 262 C612 232 644 172 704 126" stroke="url(#rewardGold)"/>
-          <path id="line-book" d="M579 310 C626 306 690 307 754 312" stroke="url(#rewardGold)"/>
-          <path id="line-day" d="M574 356 C616 394 646 466 704 504" stroke="url(#rewardGold)"/>
+          <path id="line-homework" d="M385 238 C351 207 333 132 270 88" stroke="url(#taskPink)"/>
+          <path id="line-read" d="M354 279 C319 280 286 224 245 224" stroke="url(#taskBlue)"/>
+          <path id="line-clean" d="M365 319 C330 346 286 360 245 360" stroke="url(#taskMint)"/>
+          <path id="line-help" d="M400 340 C370 402 355 472 293 490" stroke="#d4a9ff"/>
+          <path id="line-coins" d="M520 234 C570 200 613 130 680 101" stroke="url(#rewardGold)"/>
+          <path id="line-book" d="M548 279 C594 276 644 262 698 262" stroke="url(#rewardGold)"/>
+          <path id="line-day" d="M520 325 C566 355 621 411 689 423" stroke="url(#rewardGold)"/>
         </g>
         <g>
-          <circle class="route-star" cx="432" cy="270" r="2.7"/>
-          <circle class="route-star dim" cx="380" cy="228" r="2"/>
-          <circle class="route-star" cx="350" cy="152" r="2.3"/>
-          <circle class="route-star" cx="316" cy="125" r="3"/>
-          <circle class="route-star" cx="424" cy="310" r="2.7"/>
-          <circle class="route-star dim" cx="370" cy="310" r="1.9"/>
-          <circle class="route-star" cx="340" cy="282" r="2.2"/>
-          <circle class="route-star" cx="311" cy="274" r="3"/>
-          <circle class="route-star" cx="434" cy="358" r="2.6"/>
-          <circle class="route-star dim" cx="394" cy="388" r="1.9"/>
-          <circle class="route-star" cx="370" cy="411" r="2.1"/>
-          <circle class="route-star" cx="346" cy="423" r="3"/>
-          <circle class="route-star" cx="456" cy="388" r="2.5"/>
-          <circle class="route-star dim" cx="426" cy="456" r="1.9"/>
-          <circle class="route-star" cx="430" cy="526" r="2.1"/>
-          <circle class="route-star" cx="421" cy="559" r="3"/>
-          <circle class="route-star" cx="578" cy="262" r="2.8"/>
-          <circle class="route-star dim" cx="598" cy="242" r="1.9"/>
-          <circle class="route-star" cx="618" cy="214" r="2.3"/>
-          <circle class="route-star dim" cx="638" cy="178" r="1.9"/>
-          <circle class="route-star" cx="666" cy="152" r="2.3"/>
-          <circle class="route-star dim" cx="692" cy="132" r="1.8"/>
-          <circle class="route-star" cx="579" cy="310" r="2.8"/>
-          <circle class="route-star dim" cx="613" cy="308" r="1.9"/>
-          <circle class="route-star" cx="648" cy="307" r="2.2"/>
-          <circle class="route-star dim" cx="686" cy="308" r="1.9"/>
-          <circle class="route-star" cx="722" cy="310" r="2.2"/>
-          <circle class="route-star dim" cx="746" cy="312" r="1.8"/>
-          <circle class="route-star" cx="574" cy="356" r="2.8"/>
-          <circle class="route-star dim" cx="600" cy="382" r="1.9"/>
-          <circle class="route-star" cx="622" cy="420" r="2.2"/>
-          <circle class="route-star dim" cx="642" cy="462" r="1.9"/>
-          <circle class="route-star" cx="670" cy="488" r="2.2"/>
-          <circle class="route-star dim" cx="696" cy="502" r="1.8"/>
+          <circle class="route-star" cx="385" cy="238" r="2.7"/>
+          <circle class="route-star dim" cx="361" cy="207" r="1.9"/>
+          <circle class="route-star" cx="335" cy="143" r="2.3"/>
+          <circle class="route-star dim" cx="304" cy="109" r="1.9"/>
+          <circle class="route-star" cx="270" cy="88" r="3"/>
+          <circle class="route-star" cx="354" cy="279" r="2.7"/>
+          <circle class="route-star dim" cx="327" cy="269" r="1.9"/>
+          <circle class="route-star" cx="296" cy="242" r="2.2"/>
+          <circle class="route-star" cx="245" cy="224" r="3"/>
+          <circle class="route-star" cx="365" cy="319" r="2.6"/>
+          <circle class="route-star dim" cx="334" cy="341" r="1.9"/>
+          <circle class="route-star" cx="289" cy="358" r="2.1"/>
+          <circle class="route-star" cx="245" cy="360" r="3"/>
+          <circle class="route-star" cx="400" cy="340" r="2.5"/>
+          <circle class="route-star dim" cx="378" cy="397" r="1.9"/>
+          <circle class="route-star" cx="349" cy="460" r="2.1"/>
+          <circle class="route-star" cx="293" cy="490" r="3"/>
+          <circle class="route-star" cx="520" cy="234" r="2.8"/>
+          <circle class="route-star dim" cx="548" cy="216" r="1.9"/>
+          <circle class="route-star" cx="579" cy="175" r="2.3"/>
+          <circle class="route-star dim" cx="612" cy="137" r="1.9"/>
+          <circle class="route-star" cx="648" cy="114" r="2.3"/>
+          <circle class="route-star" cx="680" cy="101" r="3"/>
+          <circle class="route-star" cx="548" cy="279" r="2.8"/>
+          <circle class="route-star dim" cx="579" cy="274" r="1.9"/>
+          <circle class="route-star" cx="613" cy="267" r="2.2"/>
+          <circle class="route-star dim" cx="647" cy="263" r="1.9"/>
+          <circle class="route-star" cx="677" cy="262" r="2.2"/>
+          <circle class="route-star" cx="698" cy="262" r="3"/>
+          <circle class="route-star" cx="520" cy="325" r="2.8"/>
+          <circle class="route-star dim" cx="548" cy="344" r="1.9"/>
+          <circle class="route-star" cx="580" cy="374" r="2.2"/>
+          <circle class="route-star dim" cx="614" cy="402" r="1.9"/>
+          <circle class="route-star" cx="653" cy="418" r="2.2"/>
+          <circle class="route-star" cx="689" cy="423" r="3"/>
         </g>
         <g>
-          <circle class="route-node" cx="316" cy="125" r="4"/>
-          <circle class="route-node" cx="311" cy="274" r="4"/>
-          <circle class="route-node" cx="346" cy="423" r="4"/>
-          <circle class="route-node" cx="421" cy="559" r="4"/>
-          <circle class="route-node" cx="704" cy="126" r="4"/>
-          <circle class="route-node" cx="754" cy="312" r="4"/>
-          <circle class="route-node" cx="704" cy="504" r="4"/>
+          <circle class="route-node" cx="270" cy="88" r="4"/>
+          <circle class="route-node" cx="245" cy="224" r="4"/>
+          <circle class="route-node" cx="245" cy="360" r="4"/>
+          <circle class="route-node" cx="293" cy="490" r="4"/>
+          <circle class="route-node" cx="680" cy="101" r="4"/>
+          <circle class="route-node" cx="698" cy="262" r="4"/>
+          <circle class="route-node" cx="689" cy="423" r="4"/>
         </g>
       </svg>
 
       <div class="energy-core">
         <div>
-          <svg class="core-star" viewBox="0 0 64 64" fill="currentColor" aria-hidden="true"><path d="M32 6l6.5 18.2L58 24.6 42.5 36.2 48 55 32 43.6 16 55l5.5-18.8L6 24.6l19.5-.4L32 6z"/></svg>
+          <svg class="core-star" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="coreGold" x1="12" y1="9" x2="50" y2="55" gradientUnits="userSpaceOnUse"><stop stop-color="#fff9d8"/><stop offset=".48" stop-color="#ffe08a"/><stop offset="1" stop-color="#d38a31"/></linearGradient></defs><path d="M32 6l6.5 18.2L58 24.6 42.5 36.2 48 55 32 43.6 16 55l5.5-18.8L6 24.6l19.5-.4L32 6z" fill="url(#coreGold)" stroke="#fff0ae" stroke-width="1.4"/><path d="M32 13l3.8 14.4 14.7-.5-11.7 8.9 4.9 13.8L32 41l-11.7 8.6 4.9-13.8-11.7-8.9 14.7.5L32 13z" fill="#fff3ae" opacity=".4"/></svg>
           <div class="core-title">幸运星能量</div>
           <div class="core-score"><span id="score">380</span> ⭐</div>
         </div>
@@ -1523,7 +1614,7 @@
       <div class="reward book" data-reward="book">
         <div class="reward-planet" aria-hidden="true">
           <span class="ring ring-back"></span>
-          <span class="planet-body"><svg class="planet-icon" viewBox="0 0 64 64" fill="none"><path d="M18 10h25a7 7 0 0 1 7 7v35H25a8 8 0 0 0-7 6V10z" fill="#6fd1ff" stroke="#e3f8ff" stroke-width="4" stroke-linejoin="round"/><path d="M18 12v39h30" stroke="#15548f" stroke-width="3.4" stroke-linecap="round"/><path d="M25 22h15M25 31h16M25 40h11" stroke="#15548f" stroke-width="3" stroke-linecap="round"/><path d="M42 13v21l-5-4-5 4V12" fill="#c69aff" stroke="#7348c6" stroke-width="2.2" stroke-linejoin="round"/><path d="M22 15c8 3 17 3 25 0" stroke="#fff" stroke-width="2.4" opacity=".6"/></svg></span>
+          <span class="planet-body"><svg class="planet-icon" viewBox="0 0 64 64" fill="none"><path d="M18 10h25a7 7 0 0 1 7 7v35H25a8 8 0 0 0-7 6V10z" fill="#b783ff" stroke="#f0dcff" stroke-width="4" stroke-linejoin="round"/><path d="M18 12v39h30" stroke="#5f389f" stroke-width="3.4" stroke-linecap="round"/><path d="M25 22h15M25 31h16M25 40h11" stroke="#5f389f" stroke-width="3" stroke-linecap="round"/><path d="M42 13v21l-5-4-5 4V12" fill="#e4c4ff" stroke="#7348c6" stroke-width="2.2" stroke-linejoin="round"/><path d="M22 15c8 3 17 3 25 0" stroke="#fff" stroke-width="2.4" opacity=".62"/></svg></span>
           <span class="ring ring-front"></span>
         </div>
         <div class="reward-card"><h3>书籍</h3><p>300 ⭐</p><div class="eta">预计到手 <b>2.3 周</b></div></div>
@@ -1572,7 +1663,7 @@
   </aside>
 
   <section class="command">
-    <span class="mascot" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M32 7.5l6.9 14 15.4 2.2-11.1 10.9 2.6 15.4L32 42.8 18.2 50l2.6-15.4L9.7 23.7l15.4-2.2L32 7.5z" fill="#ffd66d"/><path d="M31 14.6l4.8 9.7 10.8 1.6-7.8 7.6 1.9 10.7L31 39.1l-9.6 5.1 1.8-10.7-7.7-7.6 10.7-1.6L31 14.6z" fill="#fff3a8" opacity=".55"/><circle cx="24.8" cy="31.7" r="2.5" fill="#8a5a12"/><circle cx="39.2" cy="31.7" r="2.5" fill="#8a5a12"/><circle cx="20.8" cy="36.5" r="2.2" fill="#f0a85a" opacity=".68"/><circle cx="43.2" cy="36.5" r="2.2" fill="#f0a85a" opacity=".68"/><path d="M27.1 39.2c3.2 2.8 6.6 2.8 9.8 0" stroke="#8a5a12" stroke-width="2.5" stroke-linecap="round"/><path d="M20 16.8l-2.4-1.2L20 14.4l1.2-2.4 1.2 2.4 2.4 1.2-2.4 1.2-1.2 2.4-1.2-2.4z" fill="#fff8ce"/><path d="M46 19.2l-1.7-.8 1.7-.8.8-1.7.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7z" fill="#fff8ce"/></svg></span>
+    <span class="mascot" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><defs><radialGradient id="mascotGold" cx="0" cy="0" r="1" gradientTransform="translate(25 21) rotate(55) scale(40)"><stop stop-color="#fffbd0"/><stop offset=".5" stop-color="#ffdc71"/><stop offset="1" stop-color="#d78d2d"/></radialGradient></defs><path d="M32 8c3 0 5.7 11.4 8 13.1 2.4 1.8 14.2.7 15.1 3.6.9 2.8-9.2 8.9-10.1 11.7-.9 2.9 3.8 13.8 1.4 15.5-2.4 1.8-11.3-5.9-14.4-5.9s-12 7.7-14.4 5.9c-2.4-1.7 2.3-12.6 1.4-15.5-.9-2.8-11-8.9-10.1-11.7.9-2.9 12.7-1.8 15.1-3.6C26.3 19.4 29 8 32 8z" fill="url(#mascotGold)" stroke="#fff1a6" stroke-width="1.2"/><path d="M28 15c2.4 5.8 4.8 9.2 7.3 11.1 3 2.2 6.8 3.2 11.6 3.3" stroke="#fff9d7" stroke-width="3" stroke-linecap="round" opacity=".44"/><circle cx="25" cy="32" r="2.4" fill="#8a5a12"/><circle cx="39" cy="32" r="2.4" fill="#8a5a12"/><circle cx="20.8" cy="36.5" r="2.2" fill="#f0a85a" opacity=".68"/><circle cx="43.2" cy="36.5" r="2.2" fill="#f0a85a" opacity=".68"/><path d="M27.1 39.2c3.2 2.8 6.6 2.8 9.8 0" stroke="#8a5a12" stroke-width="2.5" stroke-linecap="round"/><path d="M20 16.8l-2.4-1.2L20 14.4l1.2-2.4 1.2 2.4 2.4 1.2-2.4 1.2-1.2 2.4-1.2-2.4z" fill="#fff8ce"/><path d="M46 19.2l-1.7-.8 1.7-.8.8-1.7.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7z" fill="#fff8ce"/></svg></span>
     <svg class="slogan-spark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.1" fill="currentColor"/><path d="M12 2v5.5M12 16.5V22M2 12h5.5M16.5 12H22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
     <input value="越努力，越幸运 ✨" readonly>
     <button class="send" id="sendBtn" aria-label="发送"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
