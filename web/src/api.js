@@ -24,6 +24,7 @@ export const api = {
   growthPlans: () => req("GET", "/api/growth-plans"),
   growthPlanProgress: (planId, itemId, delta) => req("PATCH", `/api/growth-plans/${planId}/items/${itemId}/progress`, { delta }),
   growthPlanDeliverable: (planId, itemId, done) => req("PATCH", `/api/growth-plans/${planId}/deliverables/${itemId}`, { done }),
+  measurements: () => req("GET", "/api/measurements"),
   pending: () => req("GET", "/api/redemptions?status=pending"),
   approve: (id) => req("POST", `/api/redemptions/${id}/approve`),
   reject: (id, note) => req("POST", `/api/redemptions/${id}/reject`, { note }),
@@ -41,4 +42,8 @@ export const api = {
   adminGrowthPlanProgress: (planId, itemId, delta) => req("PATCH", `/api/admin/growth-plans/${planId}/items/${itemId}/progress`, { delta }),
   adminGrowthPlanDeliverable: (planId, itemId, done) => req("PATCH", `/api/admin/growth-plans/${planId}/deliverables/${itemId}`, { done }),
   adminSettleGrowthPlan: (planId) => req("POST", `/api/admin/growth-plans/${planId}/settle`),
+  adminMeasurements: (childId) => req("GET", `/api/admin/measurements?childId=${encodeURIComponent(childId)}`),
+  adminCreateMeasurement: (item) => req("POST", "/api/admin/measurements", item),
+  adminUpdateMeasurement: (id, item) => req("PUT", `/api/admin/measurements/${id}`, item),
+  adminDeleteMeasurement: (id) => req("DELETE", `/api/admin/measurements/${id}`),
 };

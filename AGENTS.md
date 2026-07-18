@@ -1,7 +1,7 @@
 # AGENTS.md — Happy Star
 
 家庭积分系统（"幸运星"）。Node + Fastify + React，JSON 文件存储，仅家庭内网。
-当前状态：✅ **已实现**——含 UI 精修、家长端产能总览、任务/奖励行内编辑、通用成长计划、按完成时间折算的一次性计划结算、部署数据安全加固。所有决策的事实源在 `docs/superpowers/specs/2026-06-14-happy-star-design.md`。
+当前状态：✅ **已实现**——含 UI 精修、家长端产能总览、任务/奖励行内编辑、通用成长计划、按完成时间折算的一次性计划结算、身高体重趋势与三个月测量提醒、部署数据安全加固。所有决策的事实源在 `docs/superpowers/specs/2026-06-14-happy-star-design.md`。
 
 ## 关键约束（红线——违反就是事故）
 
@@ -9,7 +9,7 @@
 - **积分只能通过 `events.json` 流水增加/扣减**。当前余额 = 该孩子所有 `delta` 之和，**不**单独持久化余额字段（会与流水不一致）。
 - **兑换流程**：孩子申请 → `pending`（**不扣分**）→ 家长通过才扣分并减库存；拒绝不扣分。审批通过前**必须**校验余额 ≥ `cost`，不足则返 409。
 - **没有任何"惩罚扣分"**。所有 `delta` 为负的事件只能是 `type: "redeem"`。
-- **JSON 写入用原子写**（先写临时文件再 `rename`）。**不要**直接 `fs.writeFile` 覆盖现役数据文件。
+- **JSON 写入用原子写**（唯一临时文件再 `rename`）。读-改-写业务必须使用 `updateCollection` 按集合串行化，避免并发丢写；**不要**直接 `fs.writeFile` 覆盖现役数据文件。
 - **后端按 `role` 鉴权**——孩子路由（`/api/tasks`、`/api/rewards`）**不**对家长开放；家长有自己的 admin 端点（`GET/POST/PUT/DELETE /api/admin/{tasks,rewards}`）。**不要**在前端"隐藏"——必须在后端路由层 `requireChild` / `requireParent` 守卫。
 - **Node ESM everywhere**（`"type": "module"`），不要引入 CommonJS。
 - 整型积分，short-string id（`crypto.randomUUID().slice(0, 8)` 切片，或稳定 slug）。
@@ -25,12 +25,12 @@ happy-star/
     package.json            # Fastify + @fastify/static + @fastify/cookie
     src/
       paths.js store.js time.js auth.js seed.js app.js index.js
-      domain/               # 纯函数：points / tasks / redeem / calendar / capacity / growth-plans（先于 route 写 TDD）
+      domain/               # 纯函数：points / tasks / redeem / calendar / capacity / growth-plans / measurements（先于 route 写 TDD）
       routes/               # auth / child / parent + guard.js
     test/                   # node:test，与 src/ 同形
   web/
     package.json            # React + Vite + react-router-dom + vitest
-    src/{pages,components}/  # 含 CapacityPanel / GrowthPlanDetail；家长管理页响应式分栏
+    src/{pages,components}/  # 含 CapacityPanel / GrowthPlanDetail / MeasurementChart；家长管理页响应式分栏
   deploy/
     deploy.ps1              # Windows 开发机一键部署（打包→scp→远端 remote-install.sh）
     remote-install.sh       # 远端安装/构建/重启；部署前快照 data，trap 兜底，绝不删数据
@@ -40,7 +40,7 @@ happy-star/
     prototypes/             # 视觉契约：task-list-states.html
     superpowers/
       specs/                # 唯一事实源：2026-06-14-happy-star-design.md
-      plans/                # 已完成实施计划（保留作回溯参考）：4 份（2026-06-14 ~ 06-15）
+      plans/                # 已完成实施计划（保留作回溯参考）：10 份（2026-06-14 ~ 07-18）
 ```
 
 ## 常用命令
@@ -78,6 +78,7 @@ HAPPY_STAR_DATA=/tmp/hs-test node server/src/index.js                 # bash
 - **每孩子主题色**：颢霖粉（`#ffe3ec` header / `#b14a6b` ink）、仲贤蓝（`#e6f1fb` header / `#185fa5` ink）、家长绿（admin 区）。
 - **积分用金色星星 ⭐**，所有积分变化走 600ms 数字滚动动画（StarCount），不瞬变。
 - **日历**今日金边高亮（`#fff3c4` 底 + 2px `var(--accent-strong)` 边），孩子得分散成圆角彩底 chip。
+- **身体趋势**：身高用颢霖粉、体重用仲贤蓝；竖屏两图上下、横屏左右，页面背景继续使用中性底色。
 
 ## 修改前自问
 

@@ -1,11 +1,13 @@
 import { randomUUID } from "node:crypto";
-import { readCollection, writeCollection } from "../store.js";
+import { readCollection, writeCollection, updateCollection } from "../store.js";
 import { requireParent } from "./guard.js";
 import { balance } from "../domain/points.js";
 import { approveRedemption } from "../domain/redeem.js";
 import { capacity, etaWeeks } from "../domain/capacity.js";
 import { hashPin } from "../auth.js";
 import { summarizePlan, changeItemProgress, setDeliverable, normalizePlan, settlementPreview } from "../domain/growth-plans.js";
+import { validateMeasurement, sortMeasurements, measurementSummary } from "../domain/measurements.js";
+import { dayKey } from "../time.js";
 
 function newId(prefix) {
   return `${prefix}_${randomUUID().slice(0, 8)}`;
@@ -13,6 +15,25 @@ function newId(prefix) {
 
 function withPlanSummary(plan) {
   return { ...plan, summary: summarizePlan(plan), settlement: settlementPreview(plan) };
+}
+
+function measurementResponse(records, childId) {
+  const scoped = sortMeasurements(records.filter((row) => row.childId === childId));
+  return { records: scoped, summary: measurementSummary(scoped, dayKey(new Date())) };
+}
+
+function measurementFailure(reply, error) {
+  const statuses = {
+    measurement_not_found: 404,
+    measurement_date_exists: 409,
+    bad_child: 400,
+    bad_date: 400,
+    bad_height: 400,
+    bad_weight: 400,
+  };
+  const status = statuses[error.message];
+  if (!status) throw error;
+  return reply.code(status).send({ error: error.message });
 }
 
 export async function parentRoutes(app) {
@@ -269,5 +290,69 @@ export async function parentRoutes(app) {
     });
     await Promise.all([writeCollection("growth-plans", plans), writeCollection("events", events)]);
     return { ok: true, points: preview.estimatedPoints, plan: withPlanSummary(plans[index]), breakdown: preview.breakdown };
+  });
+
+  app.get("/api/admin/measurements", async (req, reply) => {
+    if (!requireParent(req, reply)) return;
+    const childId = req.query.childId;
+    if (!childId) return reply.code(400).send({ error: "bad_child" });
+    return measurementResponse(await readCollection("measurements", []), childId);
+  });
+
+  app.post("/api/admin/measurements", async (req, reply) => {
+    if (!requireParent(req, reply)) return;
+    let input;
+    try { input = validateMeasurement(req.body || {}); }
+    catch (error) { return reply.code(400).send({ error: error.message }); }
+    const children = await readCollection("children", []);
+    if (!children.some((child) => child.id === input.childId)) return reply.code(404).send({ error: "child_not_found" });
+    const now = new Date().toISOString();
+    const record = { id: newId("m"), ...input, createdAt: now, updatedAt: now };
+    try {
+      await updateCollection("measurements", [], (records) => {
+        if (records.some((row) => row.childId === input.childId && row.date === input.date)) {
+          throw new Error("measurement_date_exists");
+        }
+        return [...records, record];
+      });
+    } catch (error) {
+      return measurementFailure(reply, error);
+    }
+    return record;
+  });
+
+  app.put("/api/admin/measurements/:id", async (req, reply) => {
+    if (!requireParent(req, reply)) return;
+    let updated;
+    try {
+      await updateCollection("measurements", [], (records) => {
+        const index = records.findIndex((row) => row.id === req.params.id);
+        if (index < 0) throw new Error("measurement_not_found");
+        const input = validateMeasurement({ ...req.body, childId: records[index].childId });
+        if (records.some((row, rowIndex) => rowIndex !== index && row.childId === input.childId && row.date === input.date)) {
+          throw new Error("measurement_date_exists");
+        }
+        updated = { ...records[index], ...input, id: records[index].id, updatedAt: new Date().toISOString() };
+        const next = [...records];
+        next[index] = updated;
+        return next;
+      });
+    } catch (error) {
+      return measurementFailure(reply, error);
+    }
+    return updated;
+  });
+
+  app.delete("/api/admin/measurements/:id", async (req, reply) => {
+    if (!requireParent(req, reply)) return;
+    try {
+      await updateCollection("measurements", [], (records) => {
+        if (!records.some((row) => row.id === req.params.id)) throw new Error("measurement_not_found");
+        return records.filter((row) => row.id !== req.params.id);
+      });
+    } catch (error) {
+      return measurementFailure(reply, error);
+    }
+    return { ok: true };
   });
 }

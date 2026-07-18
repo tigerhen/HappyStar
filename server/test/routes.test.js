@@ -248,6 +248,71 @@ test("parent settles a completed growth plan exactly once", async () => {
   assert.equal(events.filter((event) => event.refId === source.id && event.type === "adjust").length, 1);
 });
 
+test("parent manages measurements while child only reads own records", async () => {
+  const cookie = await parentCookie();
+  const first = await app.inject({ method: "POST", url: "/api/admin/measurements", headers: { cookie }, payload: {
+    childId: "zhongxian", date: "2026-01-18", heightCm: 128.5, weightKg: 27.3, note: "首次",
+  } });
+  assert.equal(first.statusCode, 200);
+  assert.ok(first.json().id.startsWith("m_"));
+
+  const duplicate = await app.inject({ method: "POST", url: "/api/admin/measurements", headers: { cookie }, payload: {
+    childId: "zhongxian", date: "2026-01-18", heightCm: 129, weightKg: 28,
+  } });
+  assert.equal(duplicate.statusCode, 409);
+  assert.equal(duplicate.json().error, "measurement_date_exists");
+
+  const other = await app.inject({ method: "POST", url: "/api/admin/measurements", headers: { cookie }, payload: {
+    childId: "haolin", date: "2026-01-18", heightCm: 145, weightKg: 36,
+  } });
+  assert.equal(other.statusCode, 200);
+
+  const updated = await app.inject({ method: "PUT", url: `/api/admin/measurements/${first.json().id}`, headers: { cookie }, payload: {
+    date: "2026-04-18", heightCm: 130.2, weightKg: 28.1, note: "复测",
+  } });
+  assert.equal(updated.statusCode, 200);
+  assert.equal(updated.json().heightCm, 130.2);
+
+  const childLogin = await app.inject({ method: "POST", url: "/api/login", payload: { role: "child", childId: "zhongxian", pin: "0000" } });
+  const childCookie = childLogin.headers["set-cookie"];
+  const childList = await app.inject({ method: "GET", url: "/api/measurements", headers: { cookie: childCookie } });
+  assert.equal(childList.statusCode, 200);
+  assert.equal(childList.json().records.length, 1);
+  assert.ok(childList.json().records.every((row) => row.childId === "zhongxian"));
+  assert.equal(childList.json().summary.latest.date, "2026-04-18");
+
+  const forbidden = await app.inject({ method: "POST", url: "/api/admin/measurements", headers: { cookie: childCookie }, payload: {
+    childId: "zhongxian", date: "2026-07-18", heightCm: 131, weightKg: 29,
+  } });
+  assert.equal(forbidden.statusCode, 403);
+
+  const removed = await app.inject({ method: "DELETE", url: `/api/admin/measurements/${first.json().id}`, headers: { cookie } });
+  assert.equal(removed.statusCode, 200);
+});
+
+test("concurrent measurement requests preserve records and date uniqueness", async () => {
+  const cookie = await parentCookie();
+  const create = (date, heightCm) => app.inject({
+    method: "POST", url: "/api/admin/measurements", headers: { cookie },
+    payload: { childId: "zhongxian", date, heightCm, weightKg: 29 },
+  });
+
+  const distinct = await Promise.all([
+    create("2026-05-01", 130.1),
+    create("2026-06-01", 130.8),
+  ]);
+  assert.deepEqual(distinct.map((response) => response.statusCode), [200, 200]);
+
+  const duplicate = await Promise.all([
+    create("2026-07-01", 131.2),
+    create("2026-07-01", 131.3),
+  ]);
+  assert.deepEqual(duplicate.map((response) => response.statusCode).sort(), [200, 409]);
+
+  const list = await app.inject({ method: "GET", url: "/api/admin/measurements?childId=zhongxian", headers: { cookie } });
+  assert.deepEqual(list.json().records.map((row) => row.date), ["2026-05-01", "2026-06-01", "2026-07-01"]);
+});
+
 test("after teardown", () => {
   rmSync(process.env.HAPPY_STAR_DATA, { recursive: true, force: true });
 });

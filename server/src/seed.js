@@ -38,4 +38,5 @@ export async function seedIfEmpty() {
   if ((await readCollection("events", null)) === null) await writeCollection("events", []);
   if ((await readCollection("redemptions", null)) === null) await writeCollection("redemptions", []);
   if ((await readCollection("growth-plans", null)) === null) await writeCollection("growth-plans", SUMMER_GROWTH_PLANS);
+  if ((await readCollection("measurements", null)) === null) await writeCollection("measurements", []);
 }

@@ -7,8 +7,9 @@ import TasksTab from "./TasksTab.jsx";
 import RewardsTab from "./RewardsTab.jsx";
 import CalendarTab from "./CalendarTab.jsx";
 import GrowthPlansTab from "./GrowthPlansTab.jsx";
+import MeasurementsPage from "./MeasurementsPage.jsx";
 
-const TABS = [["tasks", "任务"], ["plans", "计划"], ["rewards", "奖励"], ["calendar", "日历"]];
+const TABS = [["tasks", "任务"], ["plans", "计划"], ["rewards", "奖励"], ["calendar", "日历"], ["measurements", "身体"]];
 
 export default function ChildHome({ me, onLogout }) {
   const [tab, setTab] = useState("tasks");
@@ -18,7 +19,7 @@ export default function ChildHome({ me, onLogout }) {
   const logout = async () => { await api.logout(); onLogout(); };
 
   return (
-    <div style={{ maxWidth: 460, margin: "0 auto", minHeight: "100vh" }}>
+    <div style={{ maxWidth: tab === "measurements" ? 880 : 460, margin: "0 auto", minHeight: "100vh" }}>
       <div style={{ background: t.header, padding: "14px 16px 12px", borderRadius: "0 0 22px 22px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -49,6 +50,7 @@ export default function ChildHome({ me, onLogout }) {
         {tab === "plans" && <GrowthPlansTab />}
         {tab === "rewards" && <RewardsTab balance={balance} />}
         {tab === "calendar" && <CalendarTab childId={me.childId} />}
+        {tab === "measurements" && <MeasurementsPage />}
       </div>
     </div>
   );

@@ -6,6 +6,8 @@ import { buildTaskView, countTaskToday } from "../domain/tasks.js";
 import { makeRedemption } from "../domain/redeem.js";
 import { aggregateMonth } from "../domain/calendar.js";
 import { summarizePlan, changeItemProgress, setDeliverable, settlementPreview } from "../domain/growth-plans.js";
+import { sortMeasurements, measurementSummary } from "../domain/measurements.js";
+import { dayKey } from "../time.js";
 
 function withSummary(plan) {
   return { ...plan, summary: summarizePlan(plan), settlement: settlementPreview(plan) };
@@ -132,5 +134,12 @@ export async function childRoutes(app) {
     }
     await writeCollection("growth-plans", plans);
     return withSummary(plans[index]);
+  });
+
+  app.get("/api/measurements", async (req, reply) => {
+    const s = requireChild(req, reply);
+    if (!s) return;
+    const records = sortMeasurements((await readCollection("measurements", [])).filter((row) => row.childId === s.childId));
+    return { records, summary: measurementSummary(records, dayKey(new Date())) };
   });
 }
