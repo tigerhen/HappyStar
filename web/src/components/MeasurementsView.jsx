@@ -7,10 +7,16 @@ function changeText(value, unit) {
   return `较上次 ${sign}${value} ${unit}`;
 }
 
+function metricText(value, unit) {
+  return Number.isFinite(value) ? `${value} ${unit}` : "未测";
+}
+
 export default function MeasurementsView({ data, onEdit, onDelete, disabled = false }) {
   const records = data?.records || [];
   const summary = data?.summary || {};
   const latest = summary.latest;
+  const latestHeight = summary.latestHeight || (Number.isFinite(latest?.heightCm) ? latest : null);
+  const latestWeight = summary.latestWeight || (Number.isFinite(latest?.weightKg) ? latest : null);
   const newestFirst = [...records].reverse();
   const reminder = !latest
     ? "建议现在进行首次测量"
@@ -29,13 +35,13 @@ export default function MeasurementsView({ data, onEdit, onDelete, disabled = fa
         <section className="bm-summary" aria-label="最近一次测量">
           <div>
             <span>身高</span>
-            <strong>{latest.heightCm} cm</strong>
-            <small>{changeText(summary.heightChange, "cm")}</small>
+            <strong>{metricText(latestHeight?.heightCm, "cm")}</strong>
+            <small>{latestHeight ? changeText(summary.heightChange, "cm") : "暂无记录"}</small>
           </div>
           <div>
             <span>体重</span>
-            <strong>{latest.weightKg} kg</strong>
-            <small>{changeText(summary.weightChange, "kg")}</small>
+            <strong>{metricText(latestWeight?.weightKg, "kg")}</strong>
+            <small>{latestWeight ? changeText(summary.weightChange, "kg") : "暂无记录"}</small>
           </div>
         </section>
       )}
@@ -52,7 +58,7 @@ export default function MeasurementsView({ data, onEdit, onDelete, disabled = fa
             {newestFirst.map((record) => (
               <article className="bm-history-row" key={record.id || record.date}>
                 <time dateTime={record.date}>{record.date}</time>
-                <div className="bm-history-values"><b>{record.heightCm} cm</b><b>{record.weightKg} kg</b></div>
+                <div className="bm-history-values"><b>{metricText(record.heightCm, "cm")}</b><b>{metricText(record.weightKg, "kg")}</b></div>
                 {record.note && <p>{record.note}</p>}
                 {(onEdit || onDelete) && (
                   <div className="bm-history-actions">

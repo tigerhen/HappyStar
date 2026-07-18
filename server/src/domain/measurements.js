@@ -5,21 +5,30 @@ function validDate(value) {
   return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 
-function oneDecimal(value, max) {
-  return typeof value === "number" && Number.isFinite(value) && value > 0 && value <= max && Math.abs(value * 10 - Math.round(value * 10)) < 1e-8;
+function decimalValue(value, max, places) {
+  const factor = 10 ** places;
+  return typeof value === "number" && Number.isFinite(value) && value > 0 && value <= max && Math.abs(value * factor - Math.round(value * factor)) < 1e-8;
 }
 
-function roundOne(value) {
-  return Math.round(value * 10) / 10;
+function optionalMetric(value, max, places, error) {
+  if (value === null || value === undefined || value === "") return null;
+  if (!decimalValue(value, max, places)) throw new Error(error);
+  return value;
+}
+
+function round(value, places) {
+  const factor = 10 ** places;
+  return Math.round(value * factor) / factor;
 }
 
 export function validateMeasurement(input) {
   if (!input?.childId || typeof input.childId !== "string") throw new Error("bad_child");
   if (!validDate(input.date)) throw new Error("bad_date");
-  if (!oneDecimal(input.heightCm, 300)) throw new Error("bad_height");
-  if (!oneDecimal(input.weightKg, 500)) throw new Error("bad_weight");
+  const heightCm = optionalMetric(input.heightCm, 300, 1, "bad_height");
+  const weightKg = optionalMetric(input.weightKg, 500, 2, "bad_weight");
+  if (heightCm === null && weightKg === null) throw new Error("measurement_value_required");
   const note = typeof input.note === "string" ? input.note.trim().slice(0, 200) : "";
-  return { childId: input.childId, date: input.date, heightCm: input.heightCm, weightKg: input.weightKg, note };
+  return { childId: input.childId, date: input.date, heightCm, weightKg, note };
 }
 
 export function sortMeasurements(records) {
@@ -39,16 +48,30 @@ export function addCalendarMonths(dateValue, months) {
 export function measurementSummary(records, today) {
   const sorted = sortMeasurements(records);
   if (!sorted.length) {
-    return { latest: null, previous: null, heightChange: null, weightChange: null, nextSuggestedDate: null, due: true };
+    return {
+      latest: null, previous: null,
+      latestHeight: null, previousHeight: null, latestWeight: null, previousWeight: null,
+      heightChange: null, weightChange: null, nextSuggestedDate: null, due: true,
+    };
   }
   const latest = sorted.at(-1);
   const previous = sorted.length > 1 ? sorted.at(-2) : null;
+  const heights = sorted.filter((record) => Number.isFinite(record.heightCm));
+  const weights = sorted.filter((record) => Number.isFinite(record.weightKg));
+  const latestHeight = heights.at(-1) || null;
+  const previousHeight = heights.length > 1 ? heights.at(-2) : null;
+  const latestWeight = weights.at(-1) || null;
+  const previousWeight = weights.length > 1 ? weights.at(-2) : null;
   const nextSuggestedDate = addCalendarMonths(latest.date, 3);
   return {
     latest,
     previous,
-    heightChange: previous ? roundOne(latest.heightCm - previous.heightCm) : null,
-    weightChange: previous ? roundOne(latest.weightKg - previous.weightKg) : null,
+    latestHeight,
+    previousHeight,
+    latestWeight,
+    previousWeight,
+    heightChange: previousHeight ? round(latestHeight.heightCm - previousHeight.heightCm, 1) : null,
+    weightChange: previousWeight ? round(latestWeight.weightKg - previousWeight.weightKg, 2) : null,
     nextSuggestedDate,
     due: today >= nextSuggestedDate,
   };

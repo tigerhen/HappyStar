@@ -313,6 +313,21 @@ test("concurrent measurement requests preserve records and date uniqueness", asy
   assert.deepEqual(list.json().records.map((row) => row.date), ["2026-05-01", "2026-06-01", "2026-07-01"]);
 });
 
+test("measurement routes preserve a missing metric as null", async () => {
+  const cookie = await parentCookie();
+  const created = await app.inject({ method: "POST", url: "/api/admin/measurements", headers: { cookie }, payload: {
+    childId: "haolin", date: "2025-02-17", heightCm: 137, weightKg: null,
+  } });
+  assert.equal(created.statusCode, 200);
+  assert.equal(created.json().heightCm, 137);
+  assert.equal(created.json().weightKg, null);
+
+  const childLogin = await app.inject({ method: "POST", url: "/api/login", payload: { role: "child", childId: "haolin", pin: "4321" } });
+  const childList = await app.inject({ method: "GET", url: "/api/measurements", headers: { cookie: childLogin.headers["set-cookie"] } });
+  const imported = childList.json().records.find((row) => row.date === "2025-02-17");
+  assert.equal(imported.weightKg, null);
+});
+
 test("after teardown", () => {
   rmSync(process.env.HAPPY_STAR_DATA, { recursive: true, force: true });
 });

@@ -30,6 +30,7 @@ function measurementFailure(reply, error) {
     bad_date: 400,
     bad_height: 400,
     bad_weight: 400,
+    measurement_value_required: 400,
   };
   const status = statuses[error.message];
   if (!status) throw error;

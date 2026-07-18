@@ -77,4 +77,17 @@ describe("ParentMeasurements", () => {
     await act(async () => { resolveUpdate(record); await updateRequest; });
     await waitFor(() => expect(screen.getByLabelText("孩子").disabled).toBe(false));
   }, 20000);
+
+  it("creates a height-only record with a null weight", async () => {
+    mocked.adminMeasurements.mockResolvedValue({ records: [], summary: { latest: null, due: true } });
+    mocked.adminCreateMeasurement.mockResolvedValue({ id: "m3" });
+    render(<ParentMeasurements />);
+    await screen.findByText("建议现在进行首次测量", {}, { timeout: 10000 });
+    fireEvent.change(screen.getByLabelText("测量日期"), { target: { value: "2025-02-17" } });
+    fireEvent.change(screen.getByLabelText("身高（cm）"), { target: { value: "122" } });
+    fireEvent.click(screen.getByRole("button", { name: "添加记录" }));
+    await waitFor(() => expect(mocked.adminCreateMeasurement).toHaveBeenCalledWith({
+      childId: "haolin", date: "2025-02-17", heightCm: 122, weightKg: null, note: "",
+    }), { timeout: 10000 });
+  }, 20000);
 });

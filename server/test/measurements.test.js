@@ -13,8 +13,18 @@ test("validateMeasurement accepts valid values and rejects invalid precision or 
   });
   assert.throws(() => validateMeasurement({ childId: "haolin", date: "2026-02-30", heightCm: 140, weightKg: 30 }), /bad_date/);
   assert.throws(() => validateMeasurement({ childId: "haolin", date: "2026-07-18", heightCm: 142.55, weightKg: 30 }), /bad_height/);
-  assert.throws(() => validateMeasurement({ childId: "haolin", date: "2026-07-18", heightCm: 142, weightKg: 30.25 }), /bad_weight/);
+  assert.throws(() => validateMeasurement({ childId: "haolin", date: "2026-07-18", heightCm: 142, weightKg: 30.255 }), /bad_weight/);
   assert.throws(() => validateMeasurement({ childId: "", date: "2026-07-18", heightCm: 142, weightKg: 30 }), /bad_child/);
+});
+
+test("validateMeasurement accepts either metric and normalizes missing values", () => {
+  assert.deepEqual(validateMeasurement({ childId: "zhongxian", date: "2025-02-17", heightCm: 122 }), {
+    childId: "zhongxian", date: "2025-02-17", heightCm: 122, weightKg: null, note: "",
+  });
+  assert.deepEqual(validateMeasurement({ childId: "haolin", date: "2026-03-01", weightKg: 40.65 }), {
+    childId: "haolin", date: "2026-03-01", heightCm: null, weightKg: 40.65, note: "",
+  });
+  assert.throws(() => validateMeasurement({ childId: "haolin", date: "2026-03-01", heightCm: null, weightKg: null }), /measurement_value_required/);
 });
 
 test("sortMeasurements orders records by date without mutating input", () => {
@@ -49,4 +59,19 @@ test("measurementSummary handles the first measurement and empty state", () => {
   assert.equal(empty.latest, null);
   assert.equal(empty.nextSuggestedDate, null);
   assert.equal(empty.due, true);
+});
+
+test("measurementSummary uses independent valid histories for height and weight", () => {
+  const summary = measurementSummary([
+    { date: "2025-02-17", heightCm: 122, weightKg: null },
+    { date: "2025-10-05", heightCm: 124, weightKg: 25 },
+    { date: "2025-12-13", heightCm: 125, weightKg: null },
+    { date: "2026-03-01", heightCm: 129, weightKg: 24.6 },
+  ], "2026-03-01");
+  assert.equal(summary.latestHeight.date, "2026-03-01");
+  assert.equal(summary.previousHeight.date, "2025-12-13");
+  assert.equal(summary.heightChange, 4);
+  assert.equal(summary.latestWeight.date, "2026-03-01");
+  assert.equal(summary.previousWeight.date, "2025-10-05");
+  assert.equal(summary.weightChange, -0.4);
 });

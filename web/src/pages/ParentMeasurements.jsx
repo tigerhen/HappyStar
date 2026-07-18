@@ -15,7 +15,8 @@ const ERRORS = {
   measurement_date_exists: "该日期已有记录，请直接编辑原记录",
   bad_date: "请选择正确的测量日期",
   bad_height: "身高需为大于 0 的数字，最多保留一位小数",
-  bad_weight: "体重需为大于 0 的数字，最多保留一位小数",
+  bad_weight: "体重需为大于 0 的数字，最多保留两位小数",
+  measurement_value_required: "身高和体重至少填写一项",
 };
 
 export default function ParentMeasurements() {
@@ -58,11 +59,17 @@ export default function ParentMeasurements() {
   const save = async (event) => {
     event.preventDefault();
     setError("");
+    const heightCm = form.heightCm === "" ? null : Number(form.heightCm);
+    const weightKg = form.weightKg === "" ? null : Number(form.weightKg);
+    if (heightCm === null && weightKg === null) {
+      setError(ERRORS.measurement_value_required);
+      return;
+    }
     const payload = {
       childId,
       date: form.date,
-      heightCm: Number(form.heightCm),
-      weightKg: Number(form.weightKg),
+      heightCm,
+      weightKg,
       note: form.note.trim(),
     };
     setBusy(true);
@@ -81,7 +88,12 @@ export default function ParentMeasurements() {
 
   const edit = (record) => {
     setEditingId(record.id);
-    setForm({ date: record.date, heightCm: String(record.heightCm), weightKg: String(record.weightKg), note: record.note || "" });
+    setForm({
+      date: record.date,
+      heightCm: record.heightCm === null || record.heightCm === undefined ? "" : String(record.heightCm),
+      weightKg: record.weightKg === null || record.weightKg === undefined ? "" : String(record.weightKg),
+      note: record.note || "",
+    });
     setError("");
     document.querySelector(".bm-form")?.scrollIntoView?.({ behavior: "smooth", block: "start" });
   };
@@ -123,8 +135,8 @@ export default function ParentMeasurements() {
           </div>
           <label className="bm-field"><span>测量日期</span><input type="date" required value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value })} /></label>
           <div className="bm-form-row">
-            <label className="bm-field"><span>身高（cm）</span><input aria-label="身高（cm）" type="number" min="1" max="300" step="0.1" required value={form.heightCm} onChange={(event) => setForm({ ...form, heightCm: event.target.value })} placeholder="例如 132.5" /></label>
-            <label className="bm-field"><span>体重（kg）</span><input aria-label="体重（kg）" type="number" min="1" max="500" step="0.1" required value={form.weightKg} onChange={(event) => setForm({ ...form, weightKg: event.target.value })} placeholder="例如 29.4" /></label>
+            <label className="bm-field"><span>身高（cm）</span><input aria-label="身高（cm）" type="number" min="1" max="300" step="0.1" value={form.heightCm} onChange={(event) => setForm({ ...form, heightCm: event.target.value })} placeholder="未测可留空" /></label>
+            <label className="bm-field"><span>体重（kg）</span><input aria-label="体重（kg）" type="number" min="1" max="500" step="0.01" value={form.weightKg} onChange={(event) => setForm({ ...form, weightKg: event.target.value })} placeholder="未测可留空" /></label>
           </div>
           <label className="bm-field"><span>备注（可选）</span><input maxLength="200" value={form.note} onChange={(event) => setForm({ ...form, note: event.target.value })} placeholder="如：暑假测量" /></label>
           {error && <div className="bm-form-error" role="alert">{error}</div>}

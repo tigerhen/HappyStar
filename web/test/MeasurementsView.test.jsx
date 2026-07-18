@@ -38,4 +38,14 @@ describe("MeasurementsView", () => {
     expect(onEdit).toHaveBeenCalledWith(records[1]);
     expect(onDelete).toHaveBeenCalledWith(records[1]);
   });
+
+  it("renders a missing metric as unmeasured", () => {
+    const partial = { id: "m3", date: "2025-02-17", heightCm: 122, weightKg: null };
+    render(<MeasurementsView data={{
+      records: [partial],
+      summary: { latest: partial, latestHeight: partial, latestWeight: null, heightChange: null, weightChange: null, due: true },
+    }} />);
+    expect(screen.getAllByText("未测").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("122 cm").length).toBeGreaterThan(0);
+  });
 });
