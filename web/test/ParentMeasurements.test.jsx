@@ -30,10 +30,11 @@ describe("ParentMeasurements", () => {
     await screen.findByText("暑假测量", {}, { timeout: 10000 });
     fireEvent.click(screen.getByLabelText("编辑 2026-07-18 的记录"));
     expect(screen.getByLabelText("身高（cm）").value).toBe("132.1");
+    fireEvent.change(screen.getByLabelText("身高（cm）"), { target: { value: "" } });
     fireEvent.change(screen.getByLabelText("体重（kg）"), { target: { value: "29.4" } });
     fireEvent.click(screen.getByRole("button", { name: "保存修改" }));
     await waitFor(() => expect(mocked.adminUpdateMeasurement).toHaveBeenCalledWith("m1", {
-      childId: "haolin", date: "2026-07-18", heightCm: 132.1, weightKg: 29.4, note: "暑假测量",
+      childId: "haolin", date: "2026-07-18", heightCm: null, weightKg: 29.4, note: "暑假测量",
     }));
   }, 20000);
 
@@ -88,6 +89,23 @@ describe("ParentMeasurements", () => {
     fireEvent.click(screen.getByRole("button", { name: "添加记录" }));
     await waitFor(() => expect(mocked.adminCreateMeasurement).toHaveBeenCalledWith({
       childId: "haolin", date: "2025-02-17", heightCm: 122, weightKg: null, note: "",
+    }), { timeout: 10000 });
+  }, 20000);
+
+  it("requires one metric and creates a weight-only record with two decimals", async () => {
+    mocked.adminMeasurements.mockResolvedValue({ records: [], summary: { latest: null, due: true } });
+    mocked.adminCreateMeasurement.mockResolvedValue({ id: "m4" });
+    render(<ParentMeasurements />);
+    await screen.findByText("建议现在进行首次测量", {}, { timeout: 10000 });
+    fireEvent.change(screen.getByLabelText("测量日期"), { target: { value: "2026-03-01" } });
+    fireEvent.click(screen.getByRole("button", { name: "添加记录" }));
+    expect(screen.getByRole("alert").textContent).toContain("至少填写一项");
+    expect(mocked.adminCreateMeasurement).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText("体重（kg）"), { target: { value: "40.65" } });
+    fireEvent.click(screen.getByRole("button", { name: "添加记录" }));
+    await waitFor(() => expect(mocked.adminCreateMeasurement).toHaveBeenCalledWith({
+      childId: "haolin", date: "2026-03-01", heightCm: null, weightKg: 40.65, note: "",
     }), { timeout: 10000 });
   }, 20000);
 });

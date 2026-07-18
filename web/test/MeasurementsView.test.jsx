@@ -48,4 +48,15 @@ describe("MeasurementsView", () => {
     expect(screen.getAllByText("未测").length).toBeGreaterThan(0);
     expect(screen.getAllByText("122 cm").length).toBeGreaterThan(0);
   });
+
+  it("shows the latest valid value for each metric independently", () => {
+    const height = { id: "m4", date: "2025-12-13", heightCm: 143, weightKg: null };
+    const weight = { id: "m5", date: "2026-03-01", heightCm: null, weightKg: 40.65 };
+    render(<MeasurementsView data={{
+      records: [height, weight],
+      summary: { latest: weight, latestHeight: height, latestWeight: weight, heightChange: null, weightChange: null, due: false },
+    }} />);
+    expect(screen.getAllByText("143 cm").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("40.65 kg").length).toBeGreaterThan(0);
+  });
 });

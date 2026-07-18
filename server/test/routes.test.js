@@ -322,10 +322,24 @@ test("measurement routes preserve a missing metric as null", async () => {
   assert.equal(created.json().heightCm, 137);
   assert.equal(created.json().weightKg, null);
 
+  const updated = await app.inject({ method: "PUT", url: `/api/admin/measurements/${created.json().id}`, headers: { cookie }, payload: {
+    date: "2025-02-17", heightCm: null, weightKg: 40.65,
+  } });
+  assert.equal(updated.statusCode, 200);
+  assert.equal(updated.json().heightCm, null);
+  assert.equal(updated.json().weightKg, 40.65);
+
+  const empty = await app.inject({ method: "POST", url: "/api/admin/measurements", headers: { cookie }, payload: {
+    childId: "haolin", date: "2025-05-23", heightCm: null, weightKg: null,
+  } });
+  assert.equal(empty.statusCode, 400);
+  assert.equal(empty.json().error, "measurement_value_required");
+
   const childLogin = await app.inject({ method: "POST", url: "/api/login", payload: { role: "child", childId: "haolin", pin: "4321" } });
   const childList = await app.inject({ method: "GET", url: "/api/measurements", headers: { cookie: childLogin.headers["set-cookie"] } });
   const imported = childList.json().records.find((row) => row.date === "2025-02-17");
-  assert.equal(imported.weightKg, null);
+  assert.equal(imported.heightCm, null);
+  assert.equal(imported.weightKg, 40.65);
 });
 
 test("after teardown", () => {
