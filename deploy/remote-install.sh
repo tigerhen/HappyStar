@@ -107,10 +107,9 @@ mkdir -p "$DATA_DIR"
 cd "$REMOTE_DIR"
 restarted=""
 if command -v systemctl >/dev/null 2>&1 \
-   && sudo -n true 2>/dev/null \
-   && systemctl list-unit-files 2>/dev/null | grep -q '^happy-star\.service'; then
+   && systemctl cat happy-star.service >/dev/null 2>&1; then
   echo "Restarting via systemd (happy-star.service)"
-  if sudo systemctl restart happy-star; then restarted="systemd"; fi
+  if sudo -n systemctl restart happy-star; then restarted="systemd"; fi
 fi
 if [ -z "$restarted" ]; then
   echo "Restarting via nohup (no systemd unit / no passwordless sudo)"

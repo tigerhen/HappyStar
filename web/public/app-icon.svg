@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="幸运星">
+  <rect width="512" height="512" rx="104" fill="#f3f3f0"/>
+  <circle cx="256" cy="256" r="184" fill="#ffffff" stroke="#e7e7e2" stroke-width="12"/>
+  <path d="M256 91 302 197 417 208 330 284 355 398 256 339 157 398 182 284 95 208 210 197Z"
+        fill="#ffcc33" stroke="#ff9f1c" stroke-width="18" stroke-linejoin="round"/>
+</svg>

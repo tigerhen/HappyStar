@@ -6,8 +6,9 @@ import Avatar from "../components/Avatar.jsx";
 import TasksTab from "./TasksTab.jsx";
 import RewardsTab from "./RewardsTab.jsx";
 import CalendarTab from "./CalendarTab.jsx";
+import GrowthPlansTab from "./GrowthPlansTab.jsx";
 
-const TABS = [["tasks", "任务"], ["rewards", "奖励"], ["calendar", "日历"]];
+const TABS = [["tasks", "任务"], ["plans", "计划"], ["rewards", "奖励"], ["calendar", "日历"]];
 
 export default function ChildHome({ me, onLogout }) {
   const [tab, setTab] = useState("tasks");
@@ -45,6 +46,7 @@ export default function ChildHome({ me, onLogout }) {
           ))}
         </div>
         {tab === "tasks" && <TasksTab onBalance={setBalance} />}
+        {tab === "plans" && <GrowthPlansTab />}
         {tab === "rewards" && <RewardsTab balance={balance} />}
         {tab === "calendar" && <CalendarTab childId={me.childId} />}
       </div>

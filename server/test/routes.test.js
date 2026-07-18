@@ -163,6 +163,91 @@ test("child cannot reach capacity endpoint", async () => {
   assert.equal(res.statusCode, 403);
 });
 
+test("child only sees own growth plans and can persist bounded progress without points", async () => {
+  const login = await app.inject({ method: "POST", url: "/api/login", payload: { role: "child", childId: "zhongxian", pin: "0000" } });
+  const cookie = login.headers["set-cookie"];
+  const beforeMe = await app.inject({ method: "GET", url: "/api/me", headers: { cookie } });
+  const beforeBalance = beforeMe.json().balance;
+
+  const list = await app.inject({ method: "GET", url: "/api/growth-plans", headers: { cookie } });
+  assert.equal(list.statusCode, 200);
+  assert.ok(list.json().length > 0);
+  assert.ok(list.json().every((plan) => plan.childId === "zhongxian"));
+
+  const plan = list.json()[0];
+  const item = plan.groups[0].items[0];
+  const changed = await app.inject({
+    method: "PATCH",
+    url: `/api/growth-plans/${plan.id}/items/${item.id}/progress`,
+    headers: { cookie },
+    payload: { delta: 1 },
+  });
+  assert.equal(changed.statusCode, 200);
+  const updated = changed.json().groups[0].items.find((row) => row.id === item.id);
+  assert.equal(updated.completed, Math.min(item.target, item.completed + 1));
+
+  const afterMe = await app.inject({ method: "GET", url: "/api/me", headers: { cookie } });
+  assert.equal(afterMe.json().balance, beforeBalance);
+
+  const foreign = await app.inject({ method: "GET", url: "/api/growth-plans/gp_summer_2026_haolin", headers: { cookie } });
+  assert.equal(foreign.statusCode, 404);
+});
+
+test("parent can list all growth plans and update a deliverable", async () => {
+  const cookie = await parentCookie();
+  const list = await app.inject({ method: "GET", url: "/api/admin/growth-plans", headers: { cookie } });
+  assert.equal(list.statusCode, 200);
+  assert.ok(list.json().some((plan) => plan.childId === "haolin"));
+  assert.ok(list.json().some((plan) => plan.childId === "zhongxian"));
+  const plan = list.json().find((row) => row.deliverables.length);
+  const deliverable = plan.deliverables[0];
+  const changed = await app.inject({
+    method: "PATCH",
+    url: `/api/admin/growth-plans/${plan.id}/deliverables/${deliverable.id}`,
+    headers: { cookie },
+    payload: { done: !deliverable.done },
+  });
+  assert.equal(changed.statusCode, 200);
+  assert.equal(changed.json().deliverables[0].done, !deliverable.done);
+});
+
+test("parent settles a completed growth plan exactly once", async () => {
+  const cookie = await parentCookie();
+  const list = await app.inject({ method: "GET", url: "/api/admin/growth-plans", headers: { cookie } });
+  const source = list.json().find((plan) => plan.childId === "zhongxian");
+  const early = await app.inject({ method: "POST", url: `/api/admin/growth-plans/${source.id}/settle`, headers: { cookie } });
+  assert.equal(early.statusCode, 409);
+  assert.equal(early.json().error, "plan_incomplete");
+
+  const completed = {
+    ...source,
+    groups: source.groups.map((group) => ({ ...group, items: group.items.map((item) => ({
+      ...item,
+      completed: item.optional ? 0 : item.target,
+      completionDates: item.optional ? [] : Array(item.target).fill("2026-07-01T04:00:00.000Z"),
+    })) })),
+    deliverables: source.deliverables.map((item) => ({ ...item, done: true, completedAt: "2026-07-01T04:00:00.000Z" })),
+  };
+  const saved = await app.inject({ method: "PUT", url: `/api/admin/growth-plans/${source.id}`, headers: { cookie }, payload: completed });
+  assert.equal(saved.statusCode, 200);
+  assert.equal(saved.json().settlement.ready, true);
+
+  const childLogin = await app.inject({ method: "POST", url: "/api/login", payload: { role: "child", childId: "zhongxian", pin: "0000" } });
+  const childCookie = childLogin.headers["set-cookie"];
+  const before = (await app.inject({ method: "GET", url: "/api/me", headers: { cookie: childCookie } })).json().balance;
+  const settled = await app.inject({ method: "POST", url: `/api/admin/growth-plans/${source.id}/settle`, headers: { cookie } });
+  assert.equal(settled.statusCode, 200);
+  assert.equal(settled.json().points, 500);
+  const after = (await app.inject({ method: "GET", url: "/api/me", headers: { cookie: childCookie } })).json().balance;
+  assert.equal(after, before + 500);
+
+  const duplicate = await app.inject({ method: "POST", url: `/api/admin/growth-plans/${source.id}/settle`, headers: { cookie } });
+  assert.equal(duplicate.statusCode, 409);
+  assert.equal(duplicate.json().error, "plan_already_settled");
+  const events = (await app.inject({ method: "GET", url: "/api/logs?childId=zhongxian", headers: { cookie } })).json();
+  assert.equal(events.filter((event) => event.refId === source.id && event.type === "adjust").length, 1);
+});
+
 test("after teardown", () => {
   rmSync(process.env.HAPPY_STAR_DATA, { recursive: true, force: true });
 });

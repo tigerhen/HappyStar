@@ -6,10 +6,11 @@ import ParentRewards from "./ParentRewards.jsx";
 import ParentAdjust from "./ParentAdjust.jsx";
 import ParentPins from "./ParentPins.jsx";
 import ParentLogs from "./ParentLogs.jsx";
+import ParentGrowthPlans from "./ParentGrowthPlans.jsx";
 
 const SECTIONS = [
   ["approvals", "待审批"], ["tasks", "任务"], ["rewards", "奖励"],
-  ["adjust", "加分"], ["pins", "PIN"], ["logs", "日志"],
+  ["plans", "计划"], ["adjust", "加分"], ["pins", "PIN"], ["logs", "日志"],
 ];
 
 export default function ParentHome({ onLogout }) {
@@ -32,6 +33,7 @@ export default function ParentHome({ onLogout }) {
       {sec === "approvals" && <ParentApprovals />}
       {sec === "tasks" && <ParentTasks />}
       {sec === "rewards" && <ParentRewards />}
+      {sec === "plans" && <ParentGrowthPlans />}
       {sec === "adjust" && <ParentAdjust />}
       {sec === "pins" && <ParentPins />}
       {sec === "logs" && <ParentLogs />}

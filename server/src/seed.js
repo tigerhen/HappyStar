@@ -1,5 +1,6 @@
 import { readCollection, writeCollection } from "./store.js";
 import { hashPin } from "./auth.js";
+import { SUMMER_GROWTH_PLANS } from "./summer-plans.js";
 
 const DEFAULT_PARENT_PIN = "0000";
 const DEFAULT_CHILD_PIN = "0000";
@@ -36,4 +37,5 @@ export async function seedIfEmpty() {
   }
   if ((await readCollection("events", null)) === null) await writeCollection("events", []);
   if ((await readCollection("redemptions", null)) === null) await writeCollection("redemptions", []);
+  if ((await readCollection("growth-plans", null)) === null) await writeCollection("growth-plans", SUMMER_GROWTH_PLANS);
 }

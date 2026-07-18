@@ -5,6 +5,11 @@ import { balance } from "../domain/points.js";
 import { buildTaskView, countTaskToday } from "../domain/tasks.js";
 import { makeRedemption } from "../domain/redeem.js";
 import { aggregateMonth } from "../domain/calendar.js";
+import { summarizePlan, changeItemProgress, setDeliverable, settlementPreview } from "../domain/growth-plans.js";
+
+function withSummary(plan) {
+  return { ...plan, summary: summarizePlan(plan), settlement: settlementPreview(plan) };
+}
 
 export async function childRoutes(app) {
   app.get("/api/tasks", async (req, reply) => {
@@ -79,5 +84,53 @@ export async function childRoutes(app) {
     const scoped =
       s.role === "child" ? events.filter((e) => e.childId === s.childId) : events;
     return aggregateMonth(scoped, month);
+  });
+
+  app.get("/api/growth-plans", async (req, reply) => {
+    const s = requireChild(req, reply);
+    if (!s) return;
+    const plans = await readCollection("growth-plans", []);
+    return plans.filter((plan) => plan.childId === s.childId).map(withSummary);
+  });
+
+  app.get("/api/growth-plans/:id", async (req, reply) => {
+    const s = requireChild(req, reply);
+    if (!s) return;
+    const plans = await readCollection("growth-plans", []);
+    const plan = plans.find((row) => row.id === req.params.id && row.childId === s.childId);
+    if (!plan) return reply.code(404).send({ error: "plan_not_found" });
+    return withSummary(plan);
+  });
+
+  app.patch("/api/growth-plans/:id/items/:itemId/progress", async (req, reply) => {
+    const s = requireChild(req, reply);
+    if (!s) return;
+    const plans = await readCollection("growth-plans", []);
+    const index = plans.findIndex((row) => row.id === req.params.id && row.childId === s.childId);
+    if (index < 0) return reply.code(404).send({ error: "plan_not_found" });
+    if (plans[index].status === "settled") return reply.code(409).send({ error: "plan_settled" });
+    try {
+      plans[index] = changeItemProgress(plans[index], req.params.itemId, req.body?.delta);
+    } catch (error) {
+      return reply.code(error.message === "item_not_found" ? 404 : 400).send({ error: error.message });
+    }
+    await writeCollection("growth-plans", plans);
+    return withSummary(plans[index]);
+  });
+
+  app.patch("/api/growth-plans/:id/deliverables/:itemId", async (req, reply) => {
+    const s = requireChild(req, reply);
+    if (!s) return;
+    const plans = await readCollection("growth-plans", []);
+    const index = plans.findIndex((row) => row.id === req.params.id && row.childId === s.childId);
+    if (index < 0) return reply.code(404).send({ error: "plan_not_found" });
+    if (plans[index].status === "settled") return reply.code(409).send({ error: "plan_settled" });
+    try {
+      plans[index] = setDeliverable(plans[index], req.params.itemId, req.body?.done);
+    } catch (error) {
+      return reply.code(error.message === "deliverable_not_found" ? 404 : 400).send({ error: error.message });
+    }
+    await writeCollection("growth-plans", plans);
+    return withSummary(plans[index]);
   });
 }

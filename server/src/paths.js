@@ -12,6 +12,7 @@ export const FILES = {
   rewards: "rewards.json",
   events: "events.json",
   redemptions: "redemptions.json",
+  "growth-plans": "growth-plans.json",
 };
 
 export function filePath(name) {

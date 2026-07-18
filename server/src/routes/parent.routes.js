@@ -5,9 +5,14 @@ import { balance } from "../domain/points.js";
 import { approveRedemption } from "../domain/redeem.js";
 import { capacity, etaWeeks } from "../domain/capacity.js";
 import { hashPin } from "../auth.js";
+import { summarizePlan, changeItemProgress, setDeliverable, normalizePlan, settlementPreview } from "../domain/growth-plans.js";
 
 function newId(prefix) {
   return `${prefix}_${randomUUID().slice(0, 8)}`;
+}
+
+function withPlanSummary(plan) {
+  return { ...plan, summary: summarizePlan(plan), settlement: settlementPreview(plan) };
 }
 
 export async function parentRoutes(app) {
@@ -161,5 +166,108 @@ export async function parentRoutes(app) {
       return { ok: true };
     }
     return reply.code(400).send({ error: "bad_role" });
+  });
+
+  app.get("/api/admin/growth-plans", async (req, reply) => {
+    if (!requireParent(req, reply)) return;
+    const plans = await readCollection("growth-plans", []);
+    return plans.map(withPlanSummary);
+  });
+
+  app.post("/api/admin/growth-plans", async (req, reply) => {
+    if (!requireParent(req, reply)) return;
+    const body = req.body || {};
+    if (!body.childId || !body.name?.trim()) return reply.code(400).send({ error: "bad_plan" });
+    const children = await readCollection("children", []);
+    if (!children.some((child) => child.id === body.childId)) return reply.code(404).send({ error: "child_not_found" });
+    const plans = await readCollection("growth-plans", []);
+    const plan = normalizePlan({
+      id: newId("gp"), childId: body.childId, name: body.name.trim(),
+      startDate: body.startDate || "", endDate: body.endDate || "", status: body.status || "active",
+      targetPoints: Number.isInteger(body.targetPoints) ? body.targetPoints : 0,
+      groups: Array.isArray(body.groups) ? body.groups : [],
+      deliverables: Array.isArray(body.deliverables) ? body.deliverables : [],
+    });
+    plans.push(plan);
+    await writeCollection("growth-plans", plans);
+    return withPlanSummary(plan);
+  });
+
+  app.put("/api/admin/growth-plans/:id", async (req, reply) => {
+    if (!requireParent(req, reply)) return;
+    const plans = await readCollection("growth-plans", []);
+    const index = plans.findIndex((row) => row.id === req.params.id);
+    if (index < 0) return reply.code(404).send({ error: "plan_not_found" });
+    if (plans[index].status === "settled") return reply.code(409).send({ error: "plan_settled" });
+    plans[index] = normalizePlan({ ...plans[index], ...req.body, id: plans[index].id });
+    await writeCollection("growth-plans", plans);
+    return withPlanSummary(plans[index]);
+  });
+
+  app.delete("/api/admin/growth-plans/:id", async (req, reply) => {
+    if (!requireParent(req, reply)) return;
+    const plans = await readCollection("growth-plans", []);
+    const target = plans.find((row) => row.id === req.params.id);
+    if (!target) return reply.code(404).send({ error: "plan_not_found" });
+    if (target.status === "settled") return reply.code(409).send({ error: "plan_settled" });
+    await writeCollection("growth-plans", plans.filter((row) => row.id !== req.params.id));
+    return { ok: true };
+  });
+
+  app.patch("/api/admin/growth-plans/:id/items/:itemId/progress", async (req, reply) => {
+    if (!requireParent(req, reply)) return;
+    const plans = await readCollection("growth-plans", []);
+    const index = plans.findIndex((row) => row.id === req.params.id);
+    if (index < 0) return reply.code(404).send({ error: "plan_not_found" });
+    if (plans[index].status === "settled") return reply.code(409).send({ error: "plan_settled" });
+    try {
+      plans[index] = changeItemProgress(plans[index], req.params.itemId, req.body?.delta);
+    } catch (error) {
+      return reply.code(error.message === "item_not_found" ? 404 : 400).send({ error: error.message });
+    }
+    await writeCollection("growth-plans", plans);
+    return withPlanSummary(plans[index]);
+  });
+
+  app.patch("/api/admin/growth-plans/:id/deliverables/:itemId", async (req, reply) => {
+    if (!requireParent(req, reply)) return;
+    const plans = await readCollection("growth-plans", []);
+    const index = plans.findIndex((row) => row.id === req.params.id);
+    if (index < 0) return reply.code(404).send({ error: "plan_not_found" });
+    if (plans[index].status === "settled") return reply.code(409).send({ error: "plan_settled" });
+    try {
+      plans[index] = setDeliverable(plans[index], req.params.itemId, req.body?.done);
+    } catch (error) {
+      return reply.code(error.message === "deliverable_not_found" ? 404 : 400).send({ error: error.message });
+    }
+    await writeCollection("growth-plans", plans);
+    return withPlanSummary(plans[index]);
+  });
+
+  app.post("/api/admin/growth-plans/:id/settle", async (req, reply) => {
+    if (!requireParent(req, reply)) return;
+    const plans = await readCollection("growth-plans", []);
+    const index = plans.findIndex((row) => row.id === req.params.id);
+    if (index < 0) return reply.code(404).send({ error: "plan_not_found" });
+    const plan = plans[index];
+    if (plan.status === "settled") return reply.code(409).send({ error: "plan_already_settled" });
+    const preview = settlementPreview(plan);
+    if (!preview.ready) return reply.code(409).send({ error: "plan_incomplete" });
+    if (preview.estimatedPoints <= 0) return reply.code(409).send({ error: "bad_plan_points" });
+
+    const now = new Date();
+    const completionTimes = [
+      ...(plan.groups || []).flatMap((group) => (group.items || []).filter((item) => !item.optional).flatMap((item) => item.completionDates || [])),
+      ...(plan.deliverables || []).map((item) => item.completedAt).filter(Boolean),
+    ];
+    const completedAt = completionTimes.sort().at(-1) || now.toISOString();
+    plans[index] = { ...plan, status: "settled", completedAt, settledAt: now.toISOString(), settledPoints: preview.estimatedPoints };
+    const events = await readCollection("events", []);
+    events.push({
+      id: newId("e"), type: "adjust", childId: plan.childId, delta: preview.estimatedPoints,
+      refId: plan.id, note: `成长计划结算：${plan.name}`, createdAt: now.toISOString(),
+    });
+    await Promise.all([writeCollection("growth-plans", plans), writeCollection("events", events)]);
+    return { ok: true, points: preview.estimatedPoints, plan: withPlanSummary(plans[index]), breakdown: preview.breakdown };
   });
 }

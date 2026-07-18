@@ -1,7 +1,7 @@
 # AGENTS.md — Happy Star
 
 家庭积分系统（"幸运星"）。Node + Fastify + React，JSON 文件存储，仅家庭内网。
-当前状态：✅ **已实现**——含 UI 精修、家长端产能总览（任务页响应式分栏）、任务/奖励行内编辑、部署数据安全加固（main 分支）。所有决策的事实源在 `docs/superpowers/specs/2026-06-14-happy-star-design.md`。
+当前状态：✅ **已实现**——含 UI 精修、家长端产能总览、任务/奖励行内编辑、通用成长计划、按完成时间折算的一次性计划结算、部署数据安全加固。所有决策的事实源在 `docs/superpowers/specs/2026-06-14-happy-star-design.md`。
 
 ## 关键约束（红线——违反就是事故）
 
@@ -25,12 +25,12 @@ happy-star/
     package.json            # Fastify + @fastify/static + @fastify/cookie
     src/
       paths.js store.js time.js auth.js seed.js app.js index.js
-      domain/               # 纯函数：points / tasks / redeem / calendar / capacity（先于 route 写 TDD）
+      domain/               # 纯函数：points / tasks / redeem / calendar / capacity / growth-plans（先于 route 写 TDD）
       routes/               # auth / child / parent + guard.js
     test/                   # node:test，与 src/ 同形
   web/
     package.json            # React + Vite + react-router-dom + vitest
-    src/{pages,components}/  # 含 CapacityPanel；家长任务页 ParentTasks 为响应式左右/上下分栏
+    src/{pages,components}/  # 含 CapacityPanel / GrowthPlanDetail；家长管理页响应式分栏
   deploy/
     deploy.ps1              # Windows 开发机一键部署（打包→scp→远端 remote-install.sh）
     remote-install.sh       # 远端安装/构建/重启；部署前快照 data，trap 兜底，绝不删数据
@@ -46,9 +46,9 @@ happy-star/
 ## 常用命令
 
 ```bash
-# 测试
-npm --prefix server test       # 后端 42 测试
-npm --prefix web test          # 前端 2 测试（TaskRow）
+# 测试（数量会随功能增加，以命令实时输出为准）
+npm --prefix server test       # 后端 node:test
+npm --prefix web test          # 前端 Vitest
 npm test                       # 两者都跑（根 scripts）
 
 # 装依赖 + 构建 + 启动
