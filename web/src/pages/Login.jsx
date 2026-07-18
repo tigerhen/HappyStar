@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { api } from "../api.js";
 import Avatar from "../components/Avatar.jsx";
 
+const PARENT_AVATAR = "/avatars/parents.png";
+
 export default function Login({ onLogin }) {
   const [children, setChildren] = useState([]);
-  const [picked, setPicked] = useState(null); // {role, childId, name, emoji}
+  const [picked, setPicked] = useState(null); // { role, childId?, name, avatar?, emoji }
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
 
@@ -60,9 +62,9 @@ export default function Login({ onLogin }) {
             <div style={{ marginTop: 6, fontWeight: 500 }}>{c.name}</div>
           </button>
         ))}
-        <button className="card" onClick={() => setPicked({ role: "parent", name: "家长", emoji: "👪" })}
+        <button className="card" onClick={() => setPicked({ role: "parent", name: "家长", avatar: PARENT_AVATAR, emoji: "👪" })}
           style={{ border: "1px solid var(--line)", padding: "18px 12px", width: 120 }}>
-          <div style={{ fontSize: 48 }}>👪</div>
+          <div style={{ display: "flex", justifyContent: "center" }}><Avatar avatar={PARENT_AVATAR} emoji="👪" size={56} /></div>
           <div style={{ marginTop: 6, fontWeight: 500 }}>家长</div>
         </button>
       </div>
